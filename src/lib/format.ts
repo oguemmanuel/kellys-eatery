@@ -18,3 +18,26 @@ export function displayPhone(number: string): string {
   }
   return `+${d}`;
 }
+
+const TIME_ZONE = "Africa/Accra";
+
+export function formatTimeOfDay(date: Date | string): string {
+  return new Date(date).toLocaleTimeString("en-GB", {
+    timeZone: TIME_ZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+export function formatDayAndTime(date: Date | string): string {
+  return new Date(date).toLocaleString("en-GB", {
+    timeZone: TIME_ZONE,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
