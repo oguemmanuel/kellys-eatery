@@ -21,6 +21,8 @@ export function DishImage({
           alt={alt}
           fill
           sizes={sizes}
+          // Uploaded photos are already small WebP files, so skip resizing them again.
+          unoptimized={src.startsWith("http")}
           className="object-cover"
         />
       ) : (

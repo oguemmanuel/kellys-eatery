@@ -162,8 +162,8 @@ export function OrderView({
       <section className="mt-4 rounded-3xl bg-white p-5 text-sm shadow-sm">
         <h2 className="font-semibold text-ink">Delivery</h2>
         <dl className="mt-2 grid gap-2">
-          {order.scheduledFor && (
-            <Row label="When" value={formatWhen(order.scheduledFor)} />
+          {order.scheduledLabel && (
+            <Row label="When" value={order.scheduledLabel} />
           )}
           <Row
             label="To"
@@ -243,18 +243,6 @@ function Countdown({
   );
 }
 
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString("en-GB", {
-    timeZone: "Africa/Accra",
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
 function buildMessage(order: NonNullable<Order>, orderUrl: string): string {
   const lines = order.items.map((item) => {
     const choices =
@@ -268,9 +256,7 @@ function buildMessage(order: NonNullable<Order>, orderUrl: string): string {
     ...lines,
     `Total: ${formatGHS(order.total)}`,
     "",
-    ...(order.scheduledFor
-      ? [`Delivery: ${formatWhen(order.scheduledFor)}`]
-      : []),
+    ...(order.scheduledLabel ? [`Delivery: ${order.scheduledLabel}`] : []),
     `Name: ${order.customerName}`,
     `Phone: ${displayPhone(order.phone)}`,
     `Deliver to: ${[order.address, order.landmark].filter(Boolean).join(", ")}`,

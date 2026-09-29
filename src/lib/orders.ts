@@ -1,6 +1,7 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { formatDayAndTime } from "@/lib/format";
 
 // Order rules from docs/02-technical-requirements.md. Every price is recomputed
 // here from the database; nothing the browser sends about prices is trusted.
@@ -254,6 +255,20 @@ export async function createOrder(input: OrderInput) {
   });
 }
 
+// Cancels every unpaid order whose payment window has passed. Run by the
+// expiry cron job and whenever the admin loads orders.
+export async function expireUnpaidOrders(): Promise<number> {
+  const result = await prisma.order.updateMany({
+    where: {
+      status: "AWAITING_PAYMENT",
+      paymentStatus: "UNPAID",
+      expiresAt: { lte: new Date() },
+    },
+    data: { status: "CANCELLED" },
+  });
+  return result.count;
+}
+
 export type OrderView = Awaited<ReturnType<typeof getOrder>>;
 
 // Reads an order for its status page. An unpaid order past its payment window
@@ -285,7 +300,10 @@ export async function getOrder(id: string) {
     address: order.address,
     landmark: order.landmark,
     isBulk: order.isBulk,
-    scheduledFor: order.scheduledFor?.toISOString() ?? null,
+    // Formatted on the server so every browser shows the same text.
+    scheduledLabel: order.scheduledFor
+      ? formatDayAndTime(order.scheduledFor)
+      : null,
     total: Number(order.total),
     status: order.status,
     paymentStatus: order.paymentStatus,
