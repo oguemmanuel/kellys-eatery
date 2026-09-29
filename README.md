@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kelly's Eatery
 
-## Getting Started
+Online ordering site for Kelly's Eatery: customers scan a QR code, see today's menu, order for delivery or in bulk, and pay on WhatsApp before cooking starts. The product spec lives in [`docs/`](docs/); build from [`docs/07-MVP.md`](docs/07-MVP.md).
 
-First, run the development server:
+Stack: Next.js (App Router) + Tailwind CSS + Prisma + Supabase Postgres, deployed on Vercel.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Getting started
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Install dependencies: `npm install`
+2. Copy `.env.example` to `.env` and fill in the Supabase connection strings (any Postgres works locally).
+3. Create the tables: `npx prisma migrate dev`
+4. Load Kelly's menu: `npm run db:seed` (safe to run again; it skips what already exists)
+5. Start the site: `npm run dev` and open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What's built
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+MVP week 1:
 
-## Learn More
+- `/` kitchen intro page (QR landing) with the menu and bulk order buttons, open/closed badge, story, how it works, WhatsApp and call links
+- `/menu` today's menu by category, sold-out dishes greyed, dish sheet with required choices (swallow, meat) and extras, live price
+- `/cart` cart saved on the device, flags dishes or choices that sold out since they were added
+- `/checkout` and `/bulk` are placeholders until week 2
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The logo and hero photo in `public/brand/` are cropped from the flyer. Swap them for the original files when available.
