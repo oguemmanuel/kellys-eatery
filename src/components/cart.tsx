@@ -25,6 +25,8 @@ export type CartLine = {
   unitPrice: number;
   quantity: number;
   selections: CartSelection[];
+  // Bulk lines: "bowl", "tray"...
+  unit?: string;
   // Set on extras picked on another dish's sheet, so they show under that dish.
   extraFor?: { key: string; name: string };
 };
@@ -35,6 +37,7 @@ type AddInput = {
   basePrice: number;
   selections: CartSelection[];
   quantity: number;
+  unit?: string;
   extras: { menuItemId: string; name: string; price: number }[];
 };
 
@@ -49,9 +52,9 @@ type CartContextValue = {
   clear: () => void;
 };
 
-const STORAGE_KEY = "kellys-cart-v1";
-
+// Regular and bulk orders are separate carts and never mix.
 const CartContext = createContext<CartContextValue | null>(null);
+const BulkCartContext = createContext<CartContextValue | null>(null);
 
 function lineKey(menuItemId: string, selections: CartSelection[]): string {
   const ids = selections.map((s) => s.optionId).sort();
@@ -67,13 +70,25 @@ function mergeLine(lines: CartLine[], line: CartLine): CartLine[] {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const regular = useCartState("kellys-cart-v1");
+  const bulk = useCartState("kellys-bulk-cart-v1");
+  return (
+    <CartContext.Provider value={regular}>
+      <BulkCartContext.Provider value={bulk}>
+        {children}
+      </BulkCartContext.Provider>
+    </CartContext.Provider>
+  );
+}
+
+function useCartState(storageKey: string): CartContextValue {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [ready, setReady] = useState(false);
 
   // Load the saved cart after mount; storage can be unavailable (private mode).
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
+      const saved = window.localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -83,16 +98,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // Ignore unreadable storage and start with an empty cart.
     }
     setReady(true);
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     if (!ready) return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+      window.localStorage.setItem(storageKey, JSON.stringify(lines));
     } catch {
       // The cart still works for this visit without storage.
     }
-  }, [lines, ready]);
+  }, [lines, ready, storageKey]);
 
   const add = useCallback((input: AddInput) => {
     const unitPrice =
@@ -107,6 +122,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         unitPrice,
         quantity: input.quantity,
         selections: input.selections,
+        unit: input.unit,
       });
       // Extras go one per plate, as their own lines under the dish.
       for (const extra of input.extras) {
@@ -143,7 +159,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setLines([]), []);
 
-  const value = useMemo<CartContextValue>(
+  return useMemo<CartContextValue>(
     () => ({
       lines,
       ready,
@@ -156,12 +172,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }),
     [lines, ready, add, setQuantity, remove, clear],
   );
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart(): CartContextValue {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error("useCart must be used inside CartProvider");
+  return ctx;
+}
+
+export function useBulkCart(): CartContextValue {
+  const ctx = useContext(BulkCartContext);
+  if (!ctx) throw new Error("useBulkCart must be used inside CartProvider");
   return ctx;
 }

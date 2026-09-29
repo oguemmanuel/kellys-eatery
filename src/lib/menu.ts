@@ -43,6 +43,7 @@ export type KitchenInfo = {
   whatsapp: string;
   isOpen: boolean;
   openingHours: OpeningHours | null;
+  bulkLeadHours: number;
 };
 
 // Stored in Kitchen.openingHours, e.g. [{ "days": "Mon - Sat", "hours": "9am - 9pm" }]
@@ -57,6 +58,7 @@ const FALLBACK_KITCHEN: KitchenInfo = {
   whatsapp: "233592569298",
   isOpen: true,
   openingHours: null,
+  bulkLeadHours: 24,
 };
 
 export async function getKitchen(): Promise<KitchenInfo> {
@@ -73,6 +75,7 @@ export async function getKitchen(): Promise<KitchenInfo> {
     openingHours: Array.isArray(k.openingHours)
       ? (k.openingHours as OpeningHours)
       : null,
+    bulkLeadHours: k.bulkLeadHours,
   };
 }
 
@@ -134,4 +137,59 @@ export async function getMenu(): Promise<MenuCategory[]> {
       }),
     }))
     .filter((c) => c.dishes.length > 0);
+}
+
+export type BulkItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+  unit: string;
+  // Only the choices that apply to bulk orders (meat yes, swallow no).
+  optionGroups: MenuOptionGroup[];
+};
+
+// Bulk Order page: dishes the owner priced and switched on for bulk.
+export async function getBulkItems(): Promise<BulkItem[]> {
+  const items = await prisma.menuItem.findMany({
+    where: {
+      isArchived: false,
+      bulkEnabled: true,
+      bulkPrice: { not: null },
+      bulkUnit: { not: null },
+    },
+    orderBy: [{ category: { sortOrder: "asc" } }, { sortOrder: "asc" }],
+    include: {
+      optionGroups: {
+        where: { group: { showInBulk: true } },
+        include: {
+          group: { include: { options: { orderBy: { sortOrder: "asc" } } } },
+        },
+      },
+    },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    imageUrl: item.imageUrl,
+    price: Number(item.bulkPrice),
+    unit: item.bulkUnit as string,
+    optionGroups: item.optionGroups
+      .map((link) => link.group)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((g) => ({
+        id: g.id,
+        name: g.name,
+        isRequired: g.isRequired,
+        options: g.options.map((o) => ({
+          id: o.id,
+          name: o.name,
+          priceDelta: Number(o.priceDelta),
+          isAvailable: o.isAvailable,
+        })),
+      })),
+  }));
 }

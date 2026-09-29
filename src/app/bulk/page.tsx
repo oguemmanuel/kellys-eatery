@@ -1,11 +1,12 @@
-import { ComingSoon } from "@/components/coming-soon";
+import type { Metadata } from "next";
+import { BulkView } from "@/components/bulk-view";
+import { getBulkItems } from "@/lib/menu";
 
-// Placeholder until the Bulk Order page ships (MVP week 2).
-export default function BulkPage() {
-  return (
-    <ComingSoon
-      title="Bulk orders"
-      text="Order by the bowl for events, family and offices. Online bulk ordering opens shortly. For now, message us on WhatsApp."
-    />
-  );
+export const metadata: Metadata = { title: "Bulk orders | Kelly's Eatery" };
+
+export const dynamic = "force-dynamic";
+
+export default async function BulkPage() {
+  const items = await getBulkItems();
+  return <BulkView items={items} />;
 }
