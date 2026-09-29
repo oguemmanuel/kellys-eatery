@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { OpenSwitch } from "@/components/admin/open-switch";
 import { requireAdmin } from "@/lib/auth";
@@ -15,6 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
   const admin = await requireAdmin();
   const kitchen = await getKitchen();
+  const isOwner = admin.role === "OWNER";
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cream pb-24">
@@ -25,21 +27,31 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
           </span>
           <div className="ml-auto flex items-center gap-2">
             <OpenSwitch isOpen={kitchen.isOpen} />
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="min-h-11 rounded-full px-3 text-sm font-medium text-muted"
+            {isOwner ? (
+              // Owners sign out from Settings, which keeps the header short on a phone.
+              <Link
+                href="/admin/settings"
+                className="flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-brand"
               >
-                Sign out
-              </button>
-            </form>
+                Settings
+              </Link>
+            ) : (
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="min-h-11 rounded-full px-3 text-sm font-medium text-muted"
+                >
+                  Sign out
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </header>
       <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-4">
         {children}
       </div>
-      <AdminNav isOwner={admin.role === "OWNER"} />
+      <AdminNav isOwner={isOwner} />
     </div>
   );
 }

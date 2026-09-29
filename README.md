@@ -49,4 +49,23 @@ MVP week 3 (owner admin, phone first):
 - `/admin/choices` choice groups (swallow, meat), sold-out toggles per option, prices, which dishes use each group, and whether a group shows for bulk
 - `/api/cron/expire-orders` cancels unpaid orders past their window; the admin also runs it whenever orders load
 
+MVP week 4 (owner only):
+
+- `/admin/reports` today's and this month's revenue, orders today, average order value, daily revenue for 7 or 30 days, monthly revenue for 12 months, and the top 10 best sellers (Today, 7 days, This month, All time) tagged Regular or Bulk. Revenue counts paid orders that were not cancelled, by the day they were paid in Accra time
+- `/admin/settings` open switch, opening hours, WhatsApp and call numbers, bulk notice hours, the intro page story, and sign out
+- QR code for the intro page as a PNG (2048px) or SVG download, plus `/admin/poster`, an A4 poster to print or save as PDF
+
+Before printing the QR code, set `NEXT_PUBLIC_SITE_URL` to the live domain. The settings screen warns while it still points at a local or preview address.
+
+## Launch checklist
+
+These need Kelly or the domain owner and are not code:
+
+1. Create the Supabase project, run `npx prisma migrate deploy`, then `npm run db:seed`.
+2. Import the repo in Vercel, add every value from `.env.example`, and deploy.
+3. Connect the domain in Vercel and set `NEXT_PUBLIC_SITE_URL` to it.
+4. Sign in as Kelly, enter the real menu, prices, bulk prices and photos, and check the settings.
+5. Place a test order on a real Android phone and an iPhone, mark it paid, and walk it to Delivered.
+6. Print the poster from Settings.
+
 The logo and hero photo in `public/brand/` are cropped from the flyer. Swap them for the original files when available.

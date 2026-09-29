@@ -5,6 +5,7 @@ import { assertAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ImageError, uploadDishImage } from "@/lib/images";
 import { NEXT_STATUS } from "@/lib/order-status";
+import { normalizeGhanaPhone } from "@/lib/orders";
 import { markPaidManually, PaymentError } from "@/lib/payments";
 
 export type ActionResult = { error?: string };
@@ -66,6 +67,58 @@ export async function setKitchenOpen(isOpen: boolean): Promise<ActionResult> {
   await assertAdmin();
   await prisma.kitchen.updateMany({ data: { isOpen } });
   return done();
+}
+
+const MAX_HOURS_ROWS = 7;
+
+// Kitchen details from the settings screen (owner only).
+export async function saveSettings(data: FormData): Promise<ActionResult> {
+  await assertAdmin("OWNER");
+  const text = (key: string, max: number) =>
+    String(data.get(key) ?? "")
+      .trim()
+      .slice(0, max);
+
+  const whatsapp = normalizeGhanaPhone(text("whatsapp", 20));
+  if (!whatsapp) return { error: "Enter a valid Ghana WhatsApp number." };
+  const phone = normalizeGhanaPhone(text("phone", 20));
+  if (!phone) return { error: "Enter a valid Ghana phone number for calls." };
+
+  const bulkLeadHours = Number(text("bulkLeadHours", 4));
+  if (
+    !Number.isInteger(bulkLeadHours) ||
+    bulkLeadHours < 1 ||
+    bulkLeadHours > 336
+  ) {
+    return { error: "Bulk notice must be between 1 and 336 hours." };
+  }
+
+  const days = data
+    .getAll("hoursDays")
+    .map((v) => String(v).trim().slice(0, 40));
+  const hours = data
+    .getAll("hoursTimes")
+    .map((v) => String(v).trim().slice(0, 40));
+  const openingHours = days
+    .map((d, i) => ({ days: d, hours: hours[i] ?? "" }))
+    .filter((row) => row.days && row.hours)
+    .slice(0, MAX_HOURS_ROWS);
+
+  const fields = {
+    story: text("story", 600) || null,
+    whatsapp,
+    phone,
+    bulkLeadHours,
+    openingHours,
+  };
+  const kitchen = await prisma.kitchen.findFirst({ select: { id: true } });
+  if (kitchen) {
+    await prisma.kitchen.update({ where: { id: kitchen.id }, data: fields });
+  } else {
+    await prisma.kitchen.create({ data: fields });
+  }
+  revalidatePath("/", "layout");
+  return {};
 }
 
 // ---------- Menu ----------
