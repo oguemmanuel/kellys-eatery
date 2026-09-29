@@ -10,6 +10,7 @@ export function AdminNav({ isOwner }: { isOwner: boolean }) {
     { href: "/admin/menu", label: "Menu" },
     ...(isOwner ? [{ href: "/admin/bulk", label: "Bulk" }] : []),
     { href: "/admin/choices", label: "Choices" },
+    ...(isOwner ? [{ href: "/admin/reports", label: "Reports" }] : []),
   ];
 
   return (
