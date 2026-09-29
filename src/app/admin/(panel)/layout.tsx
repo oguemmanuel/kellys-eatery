@@ -19,7 +19,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
   const isOwner = admin.role === "OWNER";
 
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-cream pb-24">
+    <div className="flex min-h-full flex-1 flex-col bg-cream pb-10">
       <header className="sticky top-0 z-30 border-b border-cream-dark bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2">
           <span className="font-display text-lg font-bold text-brand">
@@ -47,11 +47,11 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
             )}
           </div>
         </div>
+        <AdminNav isOwner={isOwner} />
       </header>
       <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-4">
         {children}
       </div>
-      <AdminNav isOwner={isOwner} />
     </div>
   );
 }

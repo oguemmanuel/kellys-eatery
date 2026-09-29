@@ -6,12 +6,13 @@ import { prisma } from "@/lib/db";
 
 export class PaymentError extends Error {}
 
-// The owner confirms a WhatsApp payment by hand.
+// The owner confirms a WhatsApp payment by hand. The food is already cooked
+// when it is listed, so a paid order is done: there is no cooking step.
 export async function markPaidManually(orderId: string, adminId: string) {
   const result = await prisma.order.updateMany({
     where: { id: orderId, status: "AWAITING_PAYMENT", paymentStatus: "UNPAID" },
     data: {
-      status: "PAID",
+      status: "COMPLETED",
       paymentStatus: "PAID",
       paymentMethod: "WHATSAPP_MANUAL",
       paidAt: new Date(),

@@ -14,10 +14,7 @@ export function AdminNav({ isOwner }: { isOwner: boolean }) {
   ];
 
   return (
-    <nav
-      aria-label="Admin"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-cream-dark bg-white pb-[env(safe-area-inset-bottom)]"
-    >
+    <nav aria-label="Admin" className="border-t border-cream-dark">
       <ul className="mx-auto flex max-w-3xl">
         {items.map((item) => {
           const active =
@@ -29,7 +26,7 @@ export function AdminNav({ isOwner }: { isOwner: boolean }) {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-14 items-center justify-center text-sm font-semibold ${
+                className={`flex min-h-12 items-center justify-center text-sm font-semibold ${
                   active ? "text-brand" : "text-muted"
                 }`}
               >

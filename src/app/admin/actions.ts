@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { assertAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ImageError, uploadDishImage } from "@/lib/images";
-import { NEXT_STATUS } from "@/lib/order-status";
 import { normalizeGhanaPhone } from "@/lib/orders";
 import { markPaidManually, PaymentError } from "@/lib/payments";
 
@@ -28,32 +27,11 @@ export async function markPaid(orderId: string): Promise<ActionResult> {
   return done();
 }
 
-// Moves a paid order one step along. The payment gate is enforced in the
-// query itself: an unpaid order never matches.
-export async function advanceOrder(orderId: string): Promise<ActionResult> {
-  await assertAdmin();
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    select: { status: true, paymentStatus: true },
-  });
-  if (!order) return { error: "Order not found." };
-  const next = NEXT_STATUS[order.status];
-  if (!next || order.paymentStatus !== "PAID") {
-    return { error: "This order must be paid before it can move on." };
-  }
-  const result = await prisma.order.updateMany({
-    where: { id: orderId, status: order.status, paymentStatus: "PAID" },
-    data: { status: next },
-  });
-  if (result.count === 0)
-    return { error: "This order was just updated. Please check again." };
-  return done();
-}
-
 export async function cancelOrder(orderId: string): Promise<ActionResult> {
   await assertAdmin();
   const result = await prisma.order.updateMany({
-    where: { id: orderId, status: { notIn: ["COMPLETED", "CANCELLED"] } },
+    // Only unpaid orders: a paid order stays in the reports.
+    where: { id: orderId, status: "AWAITING_PAYMENT" },
     data: { status: "CANCELLED" },
   });
   if (result.count === 0)
