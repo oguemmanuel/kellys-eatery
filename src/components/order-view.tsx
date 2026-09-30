@@ -7,24 +7,11 @@ import { WhatsAppIcon } from "@/components/icons";
 import { displayPhone, formatGHS, whatsappLink } from "@/lib/format";
 import type { OrderView as Order } from "@/lib/orders";
 
+// The food is cooked before it is listed, so payment is the last step.
 const STEPS = [
-  { status: "AWAITING_PAYMENT", label: "Awaiting payment" },
-  { status: "PAID", label: "Paid" },
-  { status: "PREPARING", label: "Preparing" },
-  { status: "READY", label: "Ready" },
-  { status: "OUT_FOR_DELIVERY", label: "Out for delivery" },
-  { status: "COMPLETED", label: "Completed" },
+  { key: "order", label: "Order placed" },
+  { key: "paid", label: "Payment confirmed" },
 ] as const;
-
-const HEADLINES: Record<string, string> = {
-  AWAITING_PAYMENT: "Awaiting payment",
-  PAID: "Payment confirmed, we are cooking soon",
-  PREPARING: "Payment confirmed, we are cooking",
-  READY: "Your food is ready",
-  OUT_FOR_DELIVERY: "Your food is on the way",
-  COMPLETED: "Delivered. Enjoy your meal!",
-  CANCELLED: "Order cancelled",
-};
 
 const REFRESH_MS = 15_000;
 
@@ -38,8 +25,16 @@ export function OrderView({
   orderUrl: string;
 }) {
   const router = useRouter();
-  const finished = order.status === "COMPLETED" || order.status === "CANCELLED";
   const awaiting = order.status === "AWAITING_PAYMENT";
+  const cancelled = order.status === "CANCELLED";
+  const finished = !awaiting;
+  const headline = awaiting
+    ? "Awaiting payment"
+    : cancelled
+      ? "Order cancelled"
+      : order.isBulk
+        ? "Payment confirmed. See you on the day!"
+        : "Payment confirmed. Your food is on its way!";
 
   // Keep the status live while the owner confirms payment and cooks.
   useEffect(() => {
@@ -48,14 +43,15 @@ export function OrderView({
     return () => clearInterval(timer);
   }, [finished, router]);
 
-  const stepIndex = STEPS.findIndex((s) => s.status === order.status);
+  // While awaiting, payment is the current step; once paid, both are ticked.
+  const stepIndex = awaiting ? 1 : STEPS.length;
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-10">
       <header className="text-center">
         <p className="text-sm font-medium text-muted">Order #{order.number}</p>
         <h1 className="mt-1 font-display text-3xl font-bold text-brand">
-          {HEADLINES[order.status]}
+          {headline}
         </h1>
         {order.isBulk && (
           <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-semibold text-brand-dark">
@@ -79,7 +75,7 @@ export function OrderView({
         </section>
       )}
 
-      {order.status === "CANCELLED" ? (
+      {cancelled ? (
         <section className="mt-5 rounded-3xl bg-white p-5 text-center shadow-sm">
           <p className="text-muted">
             This order was cancelled because payment was not received in time.
@@ -97,7 +93,7 @@ export function OrderView({
             const done = i < stepIndex;
             const current = i === stepIndex;
             return (
-              <li key={step.status} className="flex items-center gap-3 py-1.5">
+              <li key={step.key} className="flex items-center gap-3 py-1.5">
                 <span
                   className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
                     done

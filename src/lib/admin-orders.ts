@@ -6,35 +6,44 @@ import { expireUnpaidOrders } from "@/lib/orders";
 
 export const ORDER_TABS = [
   { key: "awaiting", label: "Awaiting payment" },
-  { key: "cooking", label: "Paid and cooking" },
-  { key: "bulk", label: "Bulk" },
-  { key: "ready", label: "Ready" },
+  { key: "bulk", label: "Bulk to deliver" },
   { key: "done", label: "Done" },
 ] as const;
 
 export type OrderTab = (typeof ORDER_TABS)[number]["key"];
 
-const ACTIVE_BULK: OrderStatus[] = [
+// Every status after payment, including ones older orders may still have.
+const PAID_STATUSES: OrderStatus[] = [
   "PAID",
   "PREPARING",
   "READY",
   "OUT_FOR_DELIVERY",
+  "COMPLETED",
 ];
+
+function startOfToday(): Date {
+  // Accra is on UTC all year.
+  const now = new Date();
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+}
 
 function tabWhere(tab: OrderTab): Prisma.OrderWhereInput {
   switch (tab) {
     case "awaiting":
       return { status: "AWAITING_PAYMENT" };
-    case "cooking":
-      return { isBulk: false, status: { in: ["PAID", "PREPARING"] } };
     case "bulk":
-      return { isBulk: true, status: { in: ACTIVE_BULK } };
-    case "ready":
-      return { isBulk: false, status: { in: ["READY", "OUT_FOR_DELIVERY"] } };
+      // Paid bulk orders still to be delivered, from today on.
+      return {
+        isBulk: true,
+        status: { in: PAID_STATUSES },
+        scheduledFor: { gte: startOfToday() },
+      };
     case "done":
       // The last week is enough here; reports cover the rest.
       return {
-        status: { in: ["COMPLETED", "CANCELLED"] },
+        status: { in: [...PAID_STATUSES, "CANCELLED"] },
         updatedAt: { gte: new Date(Date.now() - 7 * 86_400_000) },
       };
   }

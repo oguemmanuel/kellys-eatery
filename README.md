@@ -1,6 +1,6 @@
 # Kelly's Eatery
 
-Online ordering site for Kelly's Eatery: customers scan a QR code, see today's menu, order for delivery or in bulk, and pay on WhatsApp before cooking starts. The product spec lives in [`docs/`](docs/); build from [`docs/07-MVP.md`](docs/07-MVP.md).
+Online ordering site for Kelly's Eatery: customers scan a QR code, see today's menu, order for delivery or in bulk, and pay on WhatsApp. The product spec lives in [`docs/`](docs/); build from [`docs/07-MVP.md`](docs/07-MVP.md).
 
 Stack: Next.js (App Router) + Tailwind CSS + Prisma + Supabase Postgres, deployed on Vercel.
 
@@ -42,7 +42,7 @@ MVP week 2:
 MVP week 3 (owner admin, phone first):
 
 - `/admin/login` email and password sign-in through Supabase Auth; every `/admin` page checks for an admin account
-- `/admin` orders in tabs (Awaiting payment, Cooking, Bulk, Ready, Done), Mark as paid, then Start cooking, Ready, Out for delivery and Delivered; cooking cannot start before payment. The list refreshes every 10 seconds and plays a chime for a new order
+- `/admin` orders in tabs (Awaiting payment, Bulk to deliver, Done). The food is cooked before it is listed, so Mark as paid finishes the order; paid bulk orders stay under Bulk to deliver until their day. Only unpaid orders can be cancelled. The list refreshes every 10 seconds and plays a chime for a new order
 - Open and closed switch in the header
 - `/admin/menu` sold-out toggles, add and edit dishes with a photo (shrunk to about 200KB WebP), remove a dish
 - `/admin/bulk` (owner only) bulk price and unit per dish, bulk on and off, and Add extra dish for bulk-only dishes

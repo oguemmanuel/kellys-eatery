@@ -1,16 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import {
-  advanceOrder,
-  cancelOrder,
-  markPaid,
-  type ActionResult,
-} from "@/app/admin/actions";
+import { cancelOrder, markPaid, type ActionResult } from "@/app/admin/actions";
 import { PhoneIcon, WhatsAppIcon } from "@/components/icons";
 import type { AdminOrder } from "@/lib/admin-orders";
 import { displayPhone, formatGHS, whatsappLink } from "@/lib/format";
-import { ADVANCE_LABEL, STATUS_LABEL } from "@/lib/order-status";
+import { STATUS_LABEL } from "@/lib/order-status";
 
 export function OrderCard({ order }: { order: AdminOrder }) {
   const [pending, startTransition] = useTransition();
@@ -25,8 +20,6 @@ export function OrderCard({ order }: { order: AdminOrder }) {
 
   const awaiting = order.status === "AWAITING_PAYMENT";
   const paid = order.paymentStatus === "PAID";
-  const advanceLabel = ADVANCE_LABEL[order.status];
-  const finished = order.status === "COMPLETED" || order.status === "CANCELLED";
 
   return (
     <article
@@ -114,29 +107,16 @@ export function OrderCard({ order }: { order: AdminOrder }) {
         </p>
       )}
 
-      {!finished && (
+      {awaiting && (
         <div className="mt-3 flex gap-2">
-          {awaiting ? (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => run(() => markPaid(order.id))}
-              className="min-h-12 flex-1 rounded-xl bg-brand px-4 font-semibold text-white"
-            >
-              Mark as paid
-            </button>
-          ) : (
-            advanceLabel && (
-              <button
-                type="button"
-                disabled={pending || !paid}
-                onClick={() => run(() => advanceOrder(order.id))}
-                className="min-h-12 flex-1 rounded-xl bg-brand px-4 font-semibold text-white disabled:bg-muted/40"
-              >
-                {advanceLabel}
-              </button>
-            )
-          )}
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => run(() => markPaid(order.id))}
+            className="min-h-12 flex-1 rounded-xl bg-brand px-4 font-semibold text-white"
+          >
+            Mark as paid
+          </button>
           <button
             type="button"
             disabled={pending}
