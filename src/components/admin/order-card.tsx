@@ -23,12 +23,12 @@ export function OrderCard({ order }: { order: AdminOrder }) {
 
   return (
     <article
-      className={`rounded-2xl bg-white p-4 shadow-sm ${pending ? "opacity-60" : ""} ${
+      className={`rounded-2xl bg-paper p-4 shadow-soft transition-opacity duration-(--duration-base) ${pending ? "opacity-60" : ""} ${
         order.status === "CANCELLED" ? "opacity-70" : ""
       }`}
     >
       <header className="flex flex-wrap items-center gap-2">
-        <h2 className="font-display text-xl font-bold text-ink">
+        <h2 className="font-display text-2xl leading-none font-bold text-ink">
           #{order.number}
         </h2>
         {order.isBulk && (
@@ -68,9 +68,11 @@ export function OrderCard({ order }: { order: AdminOrder }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 font-bold text-brand">{formatGHS(order.total)}</p>
+      <p className="mt-2 font-display text-xl font-bold text-brand tabular-nums">
+        {formatGHS(order.total)}
+      </p>
 
-      <div className="mt-3 grid gap-1 border-t border-cream-dark pt-3 text-sm">
+      <div className="mt-3 grid gap-1 border-t border-line pt-3 text-sm">
         <p className="font-semibold text-ink">{order.customerName}</p>
         <p className="text-muted">
           {order.address}
@@ -81,7 +83,7 @@ export function OrderCard({ order }: { order: AdminOrder }) {
             href={whatsappLink(order.phone)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-11 items-center gap-2 rounded-full bg-brand-light px-4 font-semibold text-brand"
+            className="press flex min-h-11 items-center gap-2 rounded-full bg-brand-light px-4 font-semibold text-brand active:bg-brand/15"
           >
             <WhatsAppIcon className="size-4" />
             {displayPhone(order.phone)}
@@ -89,7 +91,7 @@ export function OrderCard({ order }: { order: AdminOrder }) {
           <a
             href={`tel:+${order.phone}`}
             aria-label={`Call ${order.customerName}`}
-            className="grid size-11 place-items-center rounded-full bg-brand-light text-brand"
+            className="press grid size-11 place-items-center rounded-full bg-brand-light text-brand active:bg-brand/15"
           >
             <PhoneIcon className="size-4" />
           </a>
@@ -113,7 +115,7 @@ export function OrderCard({ order }: { order: AdminOrder }) {
             type="button"
             disabled={pending}
             onClick={() => run(() => markPaid(order.id))}
-            className="min-h-12 flex-1 rounded-xl bg-brand px-4 font-semibold text-white"
+            className="press min-h-12 flex-1 rounded-xl bg-brand px-4 font-semibold text-white active:bg-brand-dark"
           >
             Mark as paid
           </button>
@@ -125,7 +127,7 @@ export function OrderCard({ order }: { order: AdminOrder }) {
                 run(() => cancelOrder(order.id));
               }
             }}
-            className="min-h-12 rounded-xl px-4 font-semibold text-muted"
+            className="press min-h-12 rounded-xl border border-line px-4 font-semibold text-muted active:bg-cream"
           >
             Cancel
           </button>

@@ -64,12 +64,12 @@ export function ChoicesManager({
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="min-h-11 w-full min-w-0 rounded-xl border border-brand/20 bg-white px-3"
+              className="min-h-11 w-full min-w-0 rounded-xl border border-line bg-white px-3"
             />
             <button
               type="submit"
               disabled={pending || !name.trim()}
-              className="min-h-11 rounded-xl bg-brand px-4 font-semibold text-white disabled:bg-muted/30"
+              className="press min-h-11 rounded-xl bg-brand px-4 font-semibold text-white active:bg-brand-dark disabled:bg-muted/30"
             >
               Add
             </button>
@@ -97,7 +97,7 @@ function GroupCard({
 
   return (
     <section
-      className={`rounded-2xl bg-white p-4 shadow-sm ${pending ? "opacity-70" : ""}`}
+      className={`rounded-2xl bg-paper p-4 shadow-soft ${pending ? "opacity-70" : ""}`}
     >
       <div className="flex items-center gap-2">
         <h2 className="flex-1 font-display text-lg font-bold text-brand">
@@ -145,7 +145,7 @@ function GroupCard({
         </label>
       </div>
 
-      <ul className="mt-2 divide-y divide-cream-dark border-y border-cream-dark">
+      <ul className="mt-2 divide-y divide-line border-y border-line">
         {group.options.map((o) => (
           <li key={o.id}>
             <OptionRow option={o} />
@@ -168,12 +168,12 @@ function GroupCard({
           onChange={(e) => setNewOption(e.target.value)}
           placeholder={`Add to ${group.name.toLowerCase()}`}
           aria-label={`New option for ${group.name}`}
-          className="min-h-11 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3"
+          className="min-h-11 w-full min-w-0 rounded-xl border border-line bg-white px-3"
         />
         <button
           type="submit"
           disabled={pending || !newOption.trim()}
-          className="min-h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white disabled:bg-muted/30"
+          className="press min-h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white active:bg-brand-dark disabled:bg-muted/30"
         >
           Add
         </button>
@@ -217,7 +217,7 @@ function OptionRow({
             value={name}
             onChange={(e) => setName(e.target.value)}
             aria-label="Name"
-            className="min-h-11 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3"
+            className="min-h-11 w-full min-w-0 rounded-xl border border-line bg-white px-3"
           />
           <input
             value={price}
@@ -225,14 +225,14 @@ function OptionRow({
             inputMode="decimal"
             placeholder="+ GHS 0"
             aria-label="Extra price in GHS"
-            className="min-h-11 w-24 min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3"
+            className="min-h-11 w-24 min-w-0 rounded-xl border border-line bg-white px-3"
           />
         </div>
         <div className="flex gap-2">
           <button
             type="submit"
             disabled={pending}
-            className="min-h-11 flex-1 rounded-xl bg-brand text-sm font-semibold text-white"
+            className="press min-h-11 flex-1 rounded-xl bg-brand text-sm font-semibold text-white active:bg-brand-dark"
           >
             Save
           </button>
@@ -350,7 +350,7 @@ function DishPicker({
         type="button"
         disabled={!dirty || pending}
         onClick={() => run(() => setGroupDishes(group.id, selected))}
-        className="mt-2 min-h-11 w-full rounded-xl bg-brand text-sm font-semibold text-white disabled:bg-muted/30"
+        className="press mt-2 min-h-11 w-full rounded-xl bg-brand text-sm font-semibold text-white active:bg-brand-dark disabled:bg-muted/30"
       >
         Save dishes
       </button>

@@ -43,7 +43,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 grid gap-4">
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">Opening hours</h2>
         {rows.map((row) => (
           <div key={row.id} className="flex items-end gap-2">
@@ -95,7 +95,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
         )}
       </section>
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">Contact</h2>
         <Field label="WhatsApp number (orders and payment)">
           <input
@@ -119,7 +119,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
         </Field>
       </section>
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">Bulk orders</h2>
         <Field label="Notice needed (hours)">
           <input
@@ -132,7 +132,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
         </Field>
       </section>
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">Intro page</h2>
         <Field label="Our story">
           <textarea
@@ -159,7 +159,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
       <button
         type="submit"
         disabled={pending}
-        className="min-h-14 rounded-2xl bg-brand font-semibold text-white disabled:bg-muted/40"
+        className="press min-h-14 rounded-2xl bg-brand font-semibold text-white active:bg-brand-dark disabled:bg-muted/40"
       >
         {pending ? "Saving..." : "Save settings"}
       </button>
@@ -168,7 +168,7 @@ export function SettingsForm({ kitchen }: { kitchen: KitchenInfo }) {
 }
 
 const inputClass =
-  "min-h-12 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3 text-base";
+  "min-h-12 w-full min-w-0 rounded-xl border border-line bg-white px-3 text-base";
 
 function Field({
   label,

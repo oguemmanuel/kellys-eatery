@@ -22,12 +22,12 @@ export function Toggle({
       aria-label={label}
       disabled={disabled || pending}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
+      className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors duration-(--duration-base) ease-(--ease-out) disabled:opacity-40 ${
         checked ? "bg-brand" : "bg-muted/35"
       } ${pending ? "opacity-60" : ""}`}
     >
       <span
-        className={`inline-block size-6 rounded-full bg-white shadow transition-transform ${
+        className={`inline-block size-6 rounded-full bg-white shadow-soft transition-transform duration-(--duration-base) ease-(--ease-out) ${
           checked ? "translate-x-7" : "translate-x-1"
         }`}
       />

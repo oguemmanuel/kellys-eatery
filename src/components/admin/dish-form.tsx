@@ -70,7 +70,7 @@ export function DishForm({
         <Link
           href={backHref}
           aria-label="Back"
-          className="grid size-11 place-items-center rounded-full bg-white text-brand shadow-sm"
+          className="grid size-11 place-items-center rounded-full bg-paper text-brand shadow-soft"
         >
           <BackIcon className="size-5" />
         </Link>
@@ -81,7 +81,7 @@ export function DishForm({
 
       {dish && <input type="hidden" name="id" value={dish.id} />}
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -154,7 +154,7 @@ export function DishForm({
         </Field>
       </section>
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">Regular menu</h2>
         <Check
           name="showOnMenu"
@@ -183,7 +183,7 @@ export function DishForm({
       </section>
 
       {groups.length > 0 && (
-        <section className="grid gap-2 rounded-2xl bg-white p-4 shadow-sm">
+        <section className="grid gap-2 rounded-2xl bg-paper p-4 shadow-soft">
           <h2 className="font-semibold text-ink">
             Choices the customer must make
           </h2>
@@ -200,7 +200,7 @@ export function DishForm({
       )}
 
       {isOwner && (
-        <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+        <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
           <h2 className="font-semibold text-ink">Bulk orders</h2>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Bulk price (GHS)">
@@ -246,7 +246,7 @@ export function DishForm({
       <button
         type="submit"
         disabled={pending}
-        className="min-h-14 rounded-2xl bg-brand font-semibold text-white disabled:bg-muted/40"
+        className="press min-h-14 rounded-2xl bg-brand font-semibold text-white active:bg-brand-dark disabled:bg-muted/40"
       >
         {pending ? "Saving..." : "Save dish"}
       </button>
@@ -272,7 +272,7 @@ export function DishForm({
 }
 
 const inputClass =
-  "min-h-12 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3 text-base";
+  "min-h-12 w-full min-w-0 rounded-xl border border-line bg-white px-3 text-base";
 
 function Field({
   label,

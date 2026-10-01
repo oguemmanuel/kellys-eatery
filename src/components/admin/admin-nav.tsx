@@ -14,7 +14,7 @@ export function AdminNav({ isOwner }: { isOwner: boolean }) {
   ];
 
   return (
-    <nav aria-label="Admin" className="border-t border-cream-dark">
+    <nav aria-label="Admin" className="border-t border-line">
       <ul className="mx-auto flex max-w-3xl">
         {items.map((item) => {
           const active =
@@ -26,17 +26,17 @@ export function AdminNav({ isOwner }: { isOwner: boolean }) {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-12 items-center justify-center text-sm font-semibold ${
-                  active ? "text-brand" : "text-muted"
+                className={`relative flex min-h-12 items-center justify-center text-sm font-semibold transition-colors duration-(--duration-fast) ${
+                  active ? "text-brand" : "text-muted active:text-brand"
                 }`}
               >
+                {item.label}
                 <span
-                  className={
-                    active ? "border-b-2 border-brand pb-0.5" : "pb-0.5"
-                  }
-                >
-                  {item.label}
-                </span>
+                  aria-hidden
+                  className={`absolute inset-x-3 bottom-0 h-[3px] origin-center rounded-t-full bg-brand transition-transform duration-(--duration-base) ease-(--ease-out) ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
               </Link>
             </li>
           );

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { CartLine } from "@/components/cart";
-import { BackIcon } from "@/components/icons";
+import { PageHeader } from "@/components/page-header";
 import { formatGHS } from "@/lib/format";
 
 const CUSTOMER_KEY = "kellys-customer-v1";
@@ -137,24 +137,18 @@ export function CheckoutForm({
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-10"
     >
-      <header className="flex items-center gap-3">
-        <Link
-          href={backHref}
-          aria-label="Back"
-          className="grid size-11 place-items-center rounded-full bg-white text-brand shadow-sm"
-        >
-          <BackIcon className="size-5" />
-        </Link>
-        <h1 className="font-display text-2xl font-bold text-brand">
-          {kind === "bulk" ? "Bulk checkout" : "Checkout"}
-        </h1>
-      </header>
+      <PageHeader
+        backHref={backHref}
+        backLabel="Back"
+        title={kind === "bulk" ? "Bulk checkout" : "Checkout"}
+        subtitle="Where should we bring your food?"
+      />
 
       {kind === "bulk" && (
-        <fieldset className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
+        <fieldset className="mt-6">
           <legend className="sr-only">Delivery date and time</legend>
-          <p className="font-semibold text-ink">Delivery date and time</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <SectionTitle>Delivery date and time</SectionTitle>
+          <div className="mt-3 grid grid-cols-2 gap-3 rounded-2xl bg-paper p-4 shadow-soft">
             <Select
               label="Date"
               value={date}
@@ -178,7 +172,8 @@ export function CheckoutForm({
         </fieldset>
       )}
 
-      <div className="mt-4 grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <SectionTitle className="mt-6">Your details</SectionTitle>
+      <div className="mt-3 grid gap-4 rounded-2xl bg-paper p-4 shadow-soft">
         <Field
           label="Your name"
           autoComplete="name"
@@ -220,9 +215,10 @@ export function CheckoutForm({
         />
       </div>
 
-      <section className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
-        <h2 className="font-semibold text-ink">Your order</h2>
-        <ul className="mt-2 divide-y divide-cream-dark">
+      <section className="mt-6">
+        <SectionTitle>Your order</SectionTitle>
+        <div className="mt-3 rounded-2xl bg-paper px-4 pt-1 pb-4 shadow-soft">
+        <ul className="divide-y divide-line">
           {lines.map((l) => (
             <li key={l.key} className="flex justify-between gap-3 py-2 text-sm">
               <span className={l.extraFor ? "pl-4 text-muted" : ""}>
@@ -240,18 +236,19 @@ export function CheckoutForm({
             </li>
           ))}
         </ul>
-        <div className="mt-2 flex justify-between border-t border-cream-dark pt-3">
+        <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
           <span className="font-semibold">Total</span>
-          <span className="text-lg font-bold text-brand tabular-nums">
+          <span className="font-display text-xl font-bold text-brand tabular-nums">
             {formatGHS(subtotal)}
           </span>
+        </div>
         </div>
       </section>
 
       {error && (
         <div
           role="alert"
-          className="mt-4 rounded-2xl bg-accent/20 p-4 text-sm text-ink"
+          className="mt-4 animate-rise rounded-2xl border border-accent/50 bg-accent/15 p-4 text-sm text-ink"
         >
           <p className="font-semibold">{error.message}</p>
           {error.fixCart && (
@@ -274,11 +271,34 @@ export function CheckoutForm({
       <button
         type="submit"
         disabled={submitting || blocked}
-        className="mt-4 flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand font-semibold text-white active:bg-brand-dark disabled:bg-muted/40"
+        className="press mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand font-semibold text-white shadow-lift active:bg-brand-dark disabled:bg-muted/30 disabled:text-ink/60 disabled:shadow-none"
       >
+        {submitting && (
+          <span
+            aria-hidden
+            className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+          />
+        )}
         {submitting ? "Placing order..." : "Place order"}
       </button>
+      <p className="mt-3 text-center text-sm text-muted">
+        Next, you pay on WhatsApp.
+      </p>
     </form>
+  );
+}
+
+function SectionTitle({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <h2 className={`px-1 font-display text-lg font-bold text-brand ${className}`}>
+      {children}
+    </h2>
   );
 }
 
@@ -301,7 +321,7 @@ function Field({
       <input
         required={!optional}
         {...props}
-        className="min-h-12 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3 text-base outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+        className="min-h-12 w-full min-w-0 rounded-xl border border-line bg-white px-3 text-base transition-shadow duration-(--duration-fast) outline-none placeholder:text-muted/60 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-visible:outline-none"
       />
     </label>
   );
@@ -328,7 +348,7 @@ function Select({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-12 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3 text-base disabled:opacity-50"
+        className="min-h-12 w-full min-w-0 rounded-xl border border-line bg-white px-3 text-base outline-none focus:border-brand focus:ring-3 focus:ring-brand/15 focus-visible:outline-none disabled:opacity-50"
       >
         <option value="" disabled>
           Choose

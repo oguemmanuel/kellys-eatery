@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { CartBar } from "@/components/cart-bar";
 import { DishImage } from "@/components/dish-image";
 import { DishSheet } from "@/components/dish-sheet";
-import { BackIcon, PlusIcon } from "@/components/icons";
+import { useCart } from "@/components/cart";
+import { ArrowRightIcon, PlusIcon } from "@/components/icons";
+import { PageHeader } from "@/components/page-header";
 import { OpenBadge } from "@/components/open-badge";
 import { formatGHS } from "@/lib/format";
 import type { MenuCategory, MenuDish } from "@/lib/menu";
@@ -21,6 +23,14 @@ export function MenuView({
 }) {
   const [selected, setSelected] = useState<MenuDish | null>(null);
   const [activeCategory, setActiveCategory] = useState(categories[0]?.id);
+  const { lines } = useCart();
+
+  // How many of each dish are already in the cart, shown on its add button.
+  const inCart: Record<string, number> = {};
+  for (const line of lines) {
+    if (line.extraFor) continue;
+    inCart[line.menuItemId] = (inCart[line.menuItemId] ?? 0) + line.quantity;
+  }
 
   // Highlight the chip of the category currently on screen.
   useEffect(() => {
@@ -40,38 +50,30 @@ export function MenuView({
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 pb-28">
-      <header className="flex items-center gap-3 px-4 pt-4">
-        <Link
-          href="/"
-          aria-label="Back to Kelly's Eatery"
-          className="grid size-11 place-items-center rounded-full bg-white text-brand shadow-sm"
-        >
-          <BackIcon className="size-5" />
-        </Link>
-        <div className="flex-1">
-          <h1 className="font-display text-2xl font-bold text-brand">
-            Today&apos;s menu
-          </h1>
-          <p className="text-sm text-muted">
-            Fresh today from Kelly&apos;s Eatery
-          </p>
-        </div>
-        <OpenBadge isOpen={isOpen} />
-      </header>
+      <div className="px-4 pt-4">
+        <PageHeader
+          backHref="/"
+          backLabel="Back to Kelly's Eatery"
+          title="Today's menu"
+          subtitle="Cooked fresh today"
+          aside={<OpenBadge isOpen={isOpen} />}
+        />
+      </div>
 
       <nav
         aria-label="Menu categories"
-        className="sticky top-0 z-20 mt-3 bg-cream/95 py-3 backdrop-blur"
+        className="sticky top-0 z-20 mt-3 border-b border-line/70 bg-cream/90 py-2.5 backdrop-blur-md"
       >
         <ul className="flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
           {categories.map((c) => (
             <li key={c.id} className="shrink-0">
               <a
                 href={`#cat-${c.id}`}
-                className={`flex min-h-11 items-center rounded-full px-4 text-sm font-semibold ${
+                aria-current={activeCategory === c.id ? "true" : undefined}
+                className={`press flex min-h-11 items-center rounded-full px-4 text-sm font-semibold ${
                   activeCategory === c.id
-                    ? "bg-brand text-white"
-                    : "bg-white text-brand shadow-sm"
+                    ? "bg-brand text-white shadow-soft"
+                    : "bg-paper text-brand ring-1 ring-line"
                 }`}
               >
                 {c.name}
@@ -83,7 +85,7 @@ export function MenuView({
 
       <div className="px-4">
         {!isOpen && (
-          <p className="mt-1 rounded-2xl bg-cream-dark p-4 text-sm text-ink">
+          <p className="mt-3 rounded-2xl bg-cream-dark p-4 text-sm text-ink">
             We are closed right now, so you can look but not order. Bulk orders
             for a later date are still open.
           </p>
@@ -91,28 +93,37 @@ export function MenuView({
 
         <Link
           href="/bulk"
-          className="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-accent px-4 py-3 text-brand-dark"
+          className="press mt-3 flex items-center justify-between gap-3 rounded-2xl border-2 border-accent bg-paper py-3 pr-3 pl-4 active:bg-white"
         >
           <span>
-            <span className="block font-semibold">Feeding a crowd?</span>
-            <span className="text-sm">Order soups and rice by the bowl.</span>
+            <span className="block font-semibold text-brand-dark">
+              Feeding a crowd?
+            </span>
+            <span className="text-sm text-muted">
+              Order soups and rice by the bowl.
+            </span>
           </span>
-          <span className="shrink-0 rounded-full bg-brand-dark px-3 py-2 text-sm font-semibold text-white">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-accent py-2 pr-2.5 pl-3.5 text-sm font-semibold text-brand-dark">
             Bulk orders
+            <ArrowRightIcon className="size-4" />
           </span>
         </Link>
 
         {categories.map((c) => (
-          <section key={c.id} id={`cat-${c.id}`} className="scroll-mt-20 pt-6">
-            <h2 className="font-display text-xl font-bold text-brand">
+          <section key={c.id} id={`cat-${c.id}`} className="scroll-mt-20 pt-7">
+            <h2 className="flex items-baseline justify-between font-display text-xl font-bold text-brand">
               {c.name}
+              <span className="font-sans text-xs font-medium text-muted">
+                {c.dishes.length} {c.dishes.length === 1 ? "dish" : "dishes"}
+              </span>
             </h2>
-            <ul className="mt-3 grid gap-3">
+            <ul className="mt-3 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
               {c.dishes.map((dish) => (
                 <li key={dish.id}>
-                  <DishCard
+                  <DishRow
                     dish={dish}
                     canOrder={isOpen && dish.orderable}
+                    inCart={inCart[dish.id] ?? 0}
                     onOpen={() => setSelected(dish)}
                   />
                 </li>
@@ -136,13 +147,15 @@ export function MenuView({
   );
 }
 
-function DishCard({
+function DishRow({
   dish,
   canOrder,
+  inCart,
   onOpen,
 }: {
   dish: MenuDish;
   canOrder: boolean;
+  inCart: number;
   onOpen: () => void;
 }) {
   const soldOut = !dish.orderable;
@@ -152,20 +165,14 @@ function DishCard({
       type="button"
       onClick={onOpen}
       disabled={!canOrder}
-      className={`flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ${
-        soldOut ? "opacity-60 grayscale" : ""
-      }`}
+      className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors duration-(--duration-fast) active:bg-cream/60 disabled:active:bg-transparent"
     >
-      <DishImage
-        src={dish.imageUrl}
-        alt={dish.name}
-        sizes="80px"
-        className="size-20 shrink-0 rounded-xl"
-      />
-      <span className="min-w-0 flex-1">
-        <span className="block font-semibold text-ink">{dish.name}</span>
+      <span className={`min-w-0 flex-1 ${soldOut ? "opacity-55" : ""}`}>
+        <span className="block leading-snug font-semibold text-ink">
+          {dish.name}
+        </span>
         {dish.description && (
-          <span className="line-clamp-2 block text-sm text-muted">
+          <span className="mt-0.5 line-clamp-2 block text-sm text-muted">
             {dish.description}
           </span>
         )}
@@ -174,15 +181,41 @@ function DishCard({
             <span className="text-muted">Sold out today</span>
           ) : (
             dish.price !== null && (
-              <span className="text-brand">{formatGHS(dish.price)}</span>
+              <span className="text-brand tabular-nums">
+                {formatGHS(dish.price)}
+              </span>
             )
           )}
         </span>
       </span>
+      {dish.imageUrl && (
+        <DishImage
+          src={dish.imageUrl}
+          alt=""
+          sizes="80px"
+          className={`size-20 shrink-0 rounded-xl ${soldOut ? "opacity-55 grayscale" : ""}`}
+        />
+      )}
       {canOrder && (
-        <span className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-brand px-4 text-sm font-semibold text-white">
-          <PlusIcon className="size-4" />
-          Add
+        <span
+          key={inCart}
+          className={`grid size-11 shrink-0 place-items-center rounded-full font-semibold transition-transform duration-(--duration-fast) group-active:scale-90 ${
+            inCart > 0
+              ? "animate-bump bg-accent text-brand-dark"
+              : "bg-brand text-white"
+          }`}
+        >
+          {inCart > 0 ? (
+            <span className="text-sm tabular-nums">
+              {inCart}
+              <span className="sr-only"> in your cart, add more</span>
+            </span>
+          ) : (
+            <>
+              <PlusIcon className="size-5" />
+              <span className="sr-only">Add</span>
+            </>
+          )}
         </span>
       )}
     </button>
