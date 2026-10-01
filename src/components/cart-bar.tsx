@@ -32,10 +32,10 @@ export function FloatingBar({
   total: number;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 animate-rise px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <div className="fixed inset-x-0 bottom-0 z-30 animate-rise px-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:inset-x-auto lg:right-8 lg:bottom-8 lg:w-[26rem] lg:p-0">
       <Link
         href={href}
-        className="press mx-auto flex min-h-15 max-w-xl items-center gap-3 rounded-2xl bg-brand pr-4 pl-3 text-white shadow-lift active:bg-brand-dark"
+        className="press mx-auto flex min-h-15 max-w-xl items-center gap-3 rounded-2xl bg-brand pr-4 pl-3 text-white shadow-lift active:bg-brand-dark lg:hover:bg-brand-dark"
       >
         <span className="relative grid size-10 place-items-center rounded-xl bg-white/15">
           <BagIcon className="size-5" />

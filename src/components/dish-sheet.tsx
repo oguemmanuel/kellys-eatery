@@ -118,7 +118,9 @@ export function DishSheet({
           if (closing && e.target === e.currentTarget) onClose();
         }}
         className={`relative flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl bg-cream shadow-lift sm:rounded-3xl ${
-          closing ? "animate-sheet-out" : "animate-sheet"
+          closing
+            ? "animate-sheet-out sm:animate-fade-out"
+            : "animate-sheet sm:animate-rise"
         }`}
       >
         <div className="overflow-y-auto overscroll-contain">
@@ -130,14 +132,17 @@ export function DishSheet({
                 sizes="(max-width: 576px) 100vw, 576px"
                 className="aspect-[16/9] w-full"
               />
-              <div aria-hidden className="absolute inset-x-0 top-2 flex justify-center">
-                <span className="h-1.5 w-10 rounded-full bg-white/80" />
+              <div
+                aria-hidden
+                className="absolute inset-x-0 top-2 flex justify-center"
+              >
+                <span className="h-1.5 w-10 rounded-full bg-white/80 sm:hidden" />
               </div>
               <div className="absolute top-3 right-3">{closeButton}</div>
             </div>
           ) : (
             <div aria-hidden className="flex justify-center pt-2.5">
-              <span className="h-1.5 w-10 rounded-full bg-cream-dark" />
+              <span className="h-1.5 w-10 rounded-full bg-cream-dark sm:hidden" />
             </div>
           )}
 
@@ -206,7 +211,9 @@ export function DishSheet({
                           }
                           className="sr-only"
                         />
-                        {active && <CheckIcon className="size-4 animate-fade" />}
+                        {active && (
+                          <CheckIcon className="size-4 animate-fade" />
+                        )}
                         {o.name}
                         {o.priceDelta > 0 && ` +${formatGHS(o.priceDelta)}`}
                       </label>

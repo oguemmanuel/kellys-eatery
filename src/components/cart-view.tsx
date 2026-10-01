@@ -27,13 +27,15 @@ export function CartView({
   const canCheckout = isOpen && !hasStale && lines.length > 0;
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-10">
+    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-10 lg:max-w-5xl lg:px-8 lg:pt-8">
       <PageHeader
         backHref="/menu"
         backLabel="Back to the menu"
         title="Your cart"
         subtitle={
-          ready && lines.length > 0 ? "Check your order, then continue." : undefined
+          ready && lines.length > 0
+            ? "Check your order, then continue."
+            : undefined
         }
       />
 
@@ -55,8 +57,8 @@ export function CartView({
           </Link>
         </div>
       ) : (
-        <>
-          <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
+        <div className="lg:mt-8 lg:grid lg:grid-cols-[1fr_22rem] lg:items-start lg:gap-8">
+          <ul className="mt-5 lg:mt-0 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
             {lines.map((line, i) => {
               const stale = isStale(line);
               return (
@@ -110,40 +112,42 @@ export function CartView({
             })}
           </ul>
 
-          <div className="mt-4 flex items-baseline justify-between px-1">
-            <span className="font-semibold">Total</span>
-            <span className="font-display text-2xl font-bold text-brand tabular-nums">
-              {formatGHS(subtotal)}
-            </span>
-          </div>
-          <p className="px-1 text-sm text-muted">
-            You pay on WhatsApp after you place the order.
-          </p>
-
-          {!isOpen && (
-            <p className="mt-3 text-center text-sm text-muted">
-              We are closed right now. You can order when we open again.
+          <aside className="lg:sticky lg:top-8 lg:rounded-2xl lg:bg-paper lg:p-6 lg:shadow-soft">
+            <div className="mt-4 flex items-baseline justify-between px-1 lg:mt-0 lg:px-0">
+              <span className="font-semibold">Total</span>
+              <span className="font-display text-2xl font-bold text-brand tabular-nums">
+                {formatGHS(subtotal)}
+              </span>
+            </div>
+            <p className="px-1 text-sm text-muted lg:px-0">
+              You pay on WhatsApp after you place the order.
             </p>
-          )}
 
-          {canCheckout ? (
-            <Link
-              href="/checkout"
-              className="press mt-5 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-brand font-semibold text-white shadow-lift active:bg-brand-dark"
-            >
-              Continue to checkout
-              <ArrowRightIcon className="size-5" />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="mt-5 flex min-h-14 w-full items-center justify-center rounded-2xl bg-muted/30 font-semibold text-ink/60"
-            >
-              Continue to checkout
-            </button>
-          )}
-        </>
+            {!isOpen && (
+              <p className="mt-3 text-center text-sm text-muted">
+                We are closed right now. You can order when we open again.
+              </p>
+            )}
+
+            {canCheckout ? (
+              <Link
+                href="/checkout"
+                className="press mt-5 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-brand font-semibold text-white shadow-lift active:bg-brand-dark"
+              >
+                Continue to checkout
+                <ArrowRightIcon className="size-5" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="mt-5 flex min-h-14 w-full items-center justify-center rounded-2xl bg-muted/30 font-semibold text-ink/60"
+              >
+                Continue to checkout
+              </button>
+            )}
+          </aside>
+        </div>
       )}
     </main>
   );

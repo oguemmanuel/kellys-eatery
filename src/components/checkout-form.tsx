@@ -135,7 +135,7 @@ export function CheckoutForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-10"
+      className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-10 lg:max-w-5xl lg:px-8 lg:pt-8"
     >
       <PageHeader
         backHref={backHref}
@@ -144,146 +144,159 @@ export function CheckoutForm({
         subtitle="Where should we bring your food?"
       />
 
-      {kind === "bulk" && (
-        <fieldset className="mt-6">
-          <legend className="sr-only">Delivery date and time</legend>
-          <SectionTitle>Delivery date and time</SectionTitle>
-          <div className="mt-3 grid grid-cols-2 gap-3 rounded-2xl bg-paper p-4 shadow-soft">
-            <Select
-              label="Date"
-              value={date}
-              onChange={(v) => {
-                setDate(v);
-                setTime("");
-              }}
-              options={dates.map((d) => ({ value: d, label: formatDay(d) }))}
+      {/* Laptop: details on the left, order summary and button on the right. */}
+      <div className="lg:mt-2 lg:grid lg:grid-cols-[1fr_24rem] lg:items-start lg:gap-8">
+        <div>
+          {kind === "bulk" && (
+            <fieldset className="mt-6">
+              <legend className="sr-only">Delivery date and time</legend>
+              <SectionTitle>Delivery date and time</SectionTitle>
+              <div className="mt-3 grid grid-cols-2 gap-3 rounded-2xl bg-paper p-4 shadow-soft">
+                <Select
+                  label="Date"
+                  value={date}
+                  onChange={(v) => {
+                    setDate(v);
+                    setTime("");
+                  }}
+                  options={dates.map((d) => ({
+                    value: d,
+                    label: formatDay(d),
+                  }))}
+                />
+                <Select
+                  label="Time"
+                  value={time}
+                  onChange={setTime}
+                  disabled={!date}
+                  options={times.map((t) => ({
+                    value: t.time,
+                    label: formatTime(t.time),
+                  }))}
+                />
+              </div>
+            </fieldset>
+          )}
+
+          <SectionTitle className="mt-6">Your details</SectionTitle>
+          <div className="mt-3 grid gap-4 rounded-2xl bg-paper p-4 shadow-soft">
+            <Field
+              label="Your name"
+              autoComplete="name"
+              value={customer.customerName}
+              onChange={set("customerName")}
             />
-            <Select
-              label="Time"
-              value={time}
-              onChange={setTime}
-              disabled={!date}
-              options={times.map((t) => ({
-                value: t.time,
-                label: formatTime(t.time),
-              }))}
+            <Field
+              label="Phone number"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="024 000 0000"
+              value={customer.phone}
+              onChange={set("phone")}
+            />
+            <Field
+              label="Delivery address"
+              autoComplete="street-address"
+              value={customer.address}
+              onChange={set("address")}
+            />
+            <Field
+              label="Landmark"
+              optional
+              placeholder="Near the blue gate"
+              value={customer.landmark}
+              onChange={set("landmark")}
+            />
+            {/* Honeypot, hidden from people. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              className="hidden"
+              aria-hidden
             />
           </div>
-        </fieldset>
-      )}
-
-      <SectionTitle className="mt-6">Your details</SectionTitle>
-      <div className="mt-3 grid gap-4 rounded-2xl bg-paper p-4 shadow-soft">
-        <Field
-          label="Your name"
-          autoComplete="name"
-          value={customer.customerName}
-          onChange={set("customerName")}
-        />
-        <Field
-          label="Phone number"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder="024 000 0000"
-          value={customer.phone}
-          onChange={set("phone")}
-        />
-        <Field
-          label="Delivery address"
-          autoComplete="street-address"
-          value={customer.address}
-          onChange={set("address")}
-        />
-        <Field
-          label="Landmark"
-          optional
-          placeholder="Near the blue gate"
-          value={customer.landmark}
-          onChange={set("landmark")}
-        />
-        {/* Honeypot, hidden from people. */}
-        <input
-          type="text"
-          name="website"
-          tabIndex={-1}
-          autoComplete="off"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          className="hidden"
-          aria-hidden
-        />
-      </div>
-
-      <section className="mt-6">
-        <SectionTitle>Your order</SectionTitle>
-        <div className="mt-3 rounded-2xl bg-paper px-4 pt-1 pb-4 shadow-soft">
-        <ul className="divide-y divide-line">
-          {lines.map((l) => (
-            <li key={l.key} className="flex justify-between gap-3 py-2 text-sm">
-              <span className={l.extraFor ? "pl-4 text-muted" : ""}>
-                {l.quantity} × {l.name}
-                {l.unit && ` (per ${l.unit})`}
-                {l.selections.length > 0 && (
-                  <span className="block text-muted">
-                    {l.selections.map((s) => s.option).join(", ")}
-                  </span>
-                )}
-              </span>
-              <span className="shrink-0 tabular-nums">
-                {formatGHS(l.unitPrice * l.quantity)}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
-          <span className="font-semibold">Total</span>
-          <span className="font-display text-xl font-bold text-brand tabular-nums">
-            {formatGHS(subtotal)}
-          </span>
         </div>
-        </div>
-      </section>
 
-      {error && (
-        <div
-          role="alert"
-          className="mt-4 animate-rise rounded-2xl border border-accent/50 bg-accent/15 p-4 text-sm text-ink"
-        >
-          <p className="font-semibold">{error.message}</p>
-          {error.fixCart && (
-            <Link
-              href={backHref}
-              className="mt-1 inline-block font-semibold text-brand underline"
+        <div className="lg:sticky lg:top-8">
+          <section className="mt-6">
+            <SectionTitle>Your order</SectionTitle>
+            <div className="mt-3 rounded-2xl bg-paper px-4 pt-1 pb-4 shadow-soft">
+              <ul className="divide-y divide-line">
+                {lines.map((l) => (
+                  <li
+                    key={l.key}
+                    className="flex justify-between gap-3 py-2 text-sm"
+                  >
+                    <span className={l.extraFor ? "pl-4 text-muted" : ""}>
+                      {l.quantity} × {l.name}
+                      {l.unit && ` (per ${l.unit})`}
+                      {l.selections.length > 0 && (
+                        <span className="block text-muted">
+                          {l.selections.map((s) => s.option).join(", ")}
+                        </span>
+                      )}
+                    </span>
+                    <span className="shrink-0 tabular-nums">
+                      {formatGHS(l.unitPrice * l.quantity)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
+                <span className="font-semibold">Total</span>
+                <span className="font-display text-xl font-bold text-brand tabular-nums">
+                  {formatGHS(subtotal)}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {error && (
+            <div
+              role="alert"
+              className="mt-4 animate-rise rounded-2xl border border-accent/50 bg-accent/15 p-4 text-sm text-ink"
             >
-              Update your order
-            </Link>
+              <p className="font-semibold">{error.message}</p>
+              {error.fixCart && (
+                <Link
+                  href={backHref}
+                  className="mt-1 inline-block font-semibold text-brand underline"
+                >
+                  Update your order
+                </Link>
+              )}
+            </div>
           )}
+
+          {blocked && (
+            <p className="mt-4 text-center text-sm text-muted">
+              We are closed right now. You can order when we open again.
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting || blocked}
+            className="press mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand font-semibold text-white shadow-lift active:bg-brand-dark disabled:bg-muted/30 disabled:text-ink/60 disabled:shadow-none"
+          >
+            {submitting && (
+              <span
+                aria-hidden
+                className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+              />
+            )}
+            {submitting ? "Placing order..." : "Place order"}
+          </button>
+          <p className="mt-3 text-center text-sm text-muted">
+            Next, you pay on WhatsApp.
+          </p>
         </div>
-      )}
-
-      {blocked && (
-        <p className="mt-4 text-center text-sm text-muted">
-          We are closed right now. You can order when we open again.
-        </p>
-      )}
-
-      <button
-        type="submit"
-        disabled={submitting || blocked}
-        className="press mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand font-semibold text-white shadow-lift active:bg-brand-dark disabled:bg-muted/30 disabled:text-ink/60 disabled:shadow-none"
-      >
-        {submitting && (
-          <span
-            aria-hidden
-            className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
-          />
-        )}
-        {submitting ? "Placing order..." : "Place order"}
-      </button>
-      <p className="mt-3 text-center text-sm text-muted">
-        Next, you pay on WhatsApp.
-      </p>
+      </div>
     </form>
   );
 }
@@ -296,7 +309,9 @@ function SectionTitle({
   className?: string;
 }) {
   return (
-    <h2 className={`px-1 font-display text-lg font-bold text-brand ${className}`}>
+    <h2
+      className={`px-1 font-display text-lg font-bold text-brand ${className}`}
+    >
       {children}
     </h2>
   );
