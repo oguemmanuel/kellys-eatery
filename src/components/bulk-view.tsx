@@ -14,7 +14,7 @@ export function BulkView({ items }: { items: BulkItem[] }) {
   const { itemCount, subtotal, ready } = useBulkCart();
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-28">
+    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-28 lg:max-w-6xl lg:px-8 lg:pt-8">
       <PageHeader
         backHref="/"
         backLabel="Back to Kelly's Eatery"
@@ -27,9 +27,12 @@ export function BulkView({ items }: { items: BulkItem[] }) {
           No bulk dishes are listed right now. Please check back soon.
         </p>
       ) : (
-        <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
+        <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft lg:mt-8 lg:grid lg:grid-cols-2 lg:gap-4 lg:divide-y-0 lg:overflow-visible lg:rounded-none lg:bg-transparent lg:shadow-none xl:grid-cols-3">
           {items.map((item) => (
-            <li key={item.id}>
+            <li
+              key={item.id}
+              className="lg:overflow-hidden lg:rounded-2xl lg:bg-paper lg:shadow-soft"
+            >
               <BulkCard item={item} />
             </li>
           ))}

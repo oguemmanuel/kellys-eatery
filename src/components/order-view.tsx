@@ -47,7 +47,7 @@ export function OrderView({
   const stepIndex = awaiting ? 1 : STEPS.length;
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-10">
+    <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-10 lg:max-w-5xl lg:px-8 lg:pt-12">
       <header className="animate-rise text-center">
         <span
           aria-hidden
@@ -80,127 +80,147 @@ export function OrderView({
         )}
       </header>
 
-      {awaiting && (
-        <section
-          className="stagger mt-6 animate-rise rounded-3xl bg-paper p-5 text-center shadow-soft"
-          style={{ "--i": 1 } as React.CSSProperties}
-        >
-          <p className="text-sm text-muted">
-            Send us your order on WhatsApp and pay there. We confirm it here.
-          </p>
-          <a
-            href={whatsappLink(whatsapp, buildMessage(order, orderUrl))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="press mt-4 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#1f7a3a] px-4 font-semibold text-white shadow-lift active:bg-brand-dark"
-          >
-            <WhatsAppIcon className="size-6" />
-            Send order on WhatsApp
-          </a>
-          <Countdown expiresAt={order.expiresAt} onExpire={router.refresh} />
-        </section>
-      )}
-
-      {cancelled ? (
-        <section className="mt-6 rounded-3xl bg-paper p-5 text-center shadow-soft">
-          <p className="text-muted">
-            This order was cancelled because payment was not received in time.
-          </p>
-          <Link
-            href={order.isBulk ? "/bulk" : "/menu"}
-            className="press mt-4 inline-flex min-h-12 items-center rounded-2xl bg-brand px-6 font-semibold text-white active:bg-brand-dark"
-          >
-            Order again
-          </Link>
-        </section>
-      ) : (
-        <ol className="mt-4 grid grid-cols-2 gap-2">
-          {STEPS.map((step, i) => {
-            const done = i < stepIndex;
-            const current = i === stepIndex;
-            return (
-              <li
-                key={step.key}
-                className={`flex items-center gap-2.5 rounded-2xl px-3 py-3 transition-colors duration-(--duration-slow) ${
-                  current ? "bg-paper shadow-soft" : done ? "bg-brand-light" : "bg-paper/60"
-                }`}
-              >
-                <span
-                  className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                    done
-                      ? "bg-brand text-white"
-                      : current
-                        ? "bg-accent text-brand-dark ring-4 ring-accent/30"
-                        : "bg-cream-dark text-muted"
-                  }`}
-                  aria-hidden
-                >
-                  {done ? <CheckIcon className="size-3.5" /> : i + 1}
-                </span>
-                <span
-                  className={`text-sm leading-tight ${
-                    current
-                      ? "font-semibold text-ink"
-                      : done
-                        ? "font-medium text-brand"
-                        : "text-muted"
-                  }`}
-                >
-                  {step.label}
-                  {current && <span className="sr-only"> (current)</span>}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      )}
-
-      <section className="mt-4 rounded-3xl bg-paper p-5 shadow-soft">
-        <h2 className="font-display text-lg font-bold text-brand">Your order</h2>
-        <ul className="mt-1 divide-y divide-line">
-          {order.items.map((item) => (
-            <li
-              key={item.id}
-              className="flex justify-between gap-3 py-2 text-sm"
+      {/* Laptop: paying on the left, the order details on the right. */}
+      <div className="lg:mt-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+        <div>
+          {awaiting && (
+            <section
+              className="stagger mt-6 animate-rise rounded-3xl bg-paper p-5 text-center shadow-soft"
+              style={{ "--i": 1 } as React.CSSProperties}
             >
-              <span>
-                {item.quantity} × {item.name}
-                {item.unit && ` (per ${item.unit})`}
-                {item.selections.length > 0 && (
-                  <span className="block text-muted">
-                    {item.selections.join(", ")}
-                  </span>
-                )}
-              </span>
-              <span className="shrink-0 tabular-nums">
-                {formatGHS(item.price * item.quantity)}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
-          <span className="font-semibold">Total</span>
-          <span className="font-display text-xl font-bold text-brand tabular-nums">
-            {formatGHS(order.total)}
-          </span>
-        </div>
-      </section>
-
-      <section className="mt-4 rounded-3xl bg-paper p-5 text-sm shadow-soft">
-        <h2 className="font-display text-lg font-bold text-brand">Delivery</h2>
-        <dl className="mt-2 grid gap-2">
-          {order.scheduledLabel && (
-            <Row label="When" value={order.scheduledLabel} />
+              <p className="text-sm text-muted">
+                Send us your order on WhatsApp and pay there. We confirm it
+                here.
+              </p>
+              <a
+                href={whatsappLink(whatsapp, buildMessage(order, orderUrl))}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press mt-4 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#1f7a3a] px-4 font-semibold text-white shadow-lift active:bg-brand-dark"
+              >
+                <WhatsAppIcon className="size-6" />
+                Send order on WhatsApp
+              </a>
+              <Countdown
+                expiresAt={order.expiresAt}
+                onExpire={router.refresh}
+              />
+            </section>
           )}
-          <Row
-            label="To"
-            value={[order.address, order.landmark].filter(Boolean).join(", ")}
-          />
-          <Row label="Name" value={order.customerName} />
-          <Row label="Phone" value={displayPhone(order.phone)} />
-        </dl>
-      </section>
 
+          {cancelled ? (
+            <section className="mt-6 rounded-3xl bg-paper p-5 text-center shadow-soft">
+              <p className="text-muted">
+                This order was cancelled because payment was not received in
+                time.
+              </p>
+              <Link
+                href={order.isBulk ? "/bulk" : "/menu"}
+                className="press mt-4 inline-flex min-h-12 items-center rounded-2xl bg-brand px-6 font-semibold text-white active:bg-brand-dark"
+              >
+                Order again
+              </Link>
+            </section>
+          ) : (
+            <ol className="mt-4 grid grid-cols-2 gap-2">
+              {STEPS.map((step, i) => {
+                const done = i < stepIndex;
+                const current = i === stepIndex;
+                return (
+                  <li
+                    key={step.key}
+                    className={`flex items-center gap-2.5 rounded-2xl px-3 py-3 transition-colors duration-(--duration-slow) ${
+                      current
+                        ? "bg-paper shadow-soft"
+                        : done
+                          ? "bg-brand-light"
+                          : "bg-paper/60"
+                    }`}
+                  >
+                    <span
+                      className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
+                        done
+                          ? "bg-brand text-white"
+                          : current
+                            ? "bg-accent text-brand-dark ring-4 ring-accent/30"
+                            : "bg-cream-dark text-muted"
+                      }`}
+                      aria-hidden
+                    >
+                      {done ? <CheckIcon className="size-3.5" /> : i + 1}
+                    </span>
+                    <span
+                      className={`text-sm leading-tight ${
+                        current
+                          ? "font-semibold text-ink"
+                          : done
+                            ? "font-medium text-brand"
+                            : "text-muted"
+                      }`}
+                    >
+                      {step.label}
+                      {current && <span className="sr-only"> (current)</span>}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+        <div className="lg:mt-2">
+          <section className="mt-4 rounded-3xl bg-paper p-5 shadow-soft">
+            <h2 className="font-display text-lg font-bold text-brand">
+              Your order
+            </h2>
+            <ul className="mt-1 divide-y divide-line">
+              {order.items.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex justify-between gap-3 py-2 text-sm"
+                >
+                  <span>
+                    {item.quantity} × {item.name}
+                    {item.unit && ` (per ${item.unit})`}
+                    {item.selections.length > 0 && (
+                      <span className="block text-muted">
+                        {item.selections.join(", ")}
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 tabular-nums">
+                    {formatGHS(item.price * item.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
+              <span className="font-semibold">Total</span>
+              <span className="font-display text-xl font-bold text-brand tabular-nums">
+                {formatGHS(order.total)}
+              </span>
+            </div>
+          </section>
+
+          <section className="mt-4 rounded-3xl bg-paper p-5 text-sm shadow-soft">
+            <h2 className="font-display text-lg font-bold text-brand">
+              Delivery
+            </h2>
+            <dl className="mt-2 grid gap-2">
+              {order.scheduledLabel && (
+                <Row label="When" value={order.scheduledLabel} />
+              )}
+              <Row
+                label="To"
+                value={[order.address, order.landmark]
+                  .filter(Boolean)
+                  .join(", ")}
+              />
+              <Row label="Name" value={order.customerName} />
+              <Row label="Phone" value={displayPhone(order.phone)} />
+            </dl>
+          </section>
+        </div>
+      </div>
       <p className="mt-6 text-center">
         <Link
           href="/"
