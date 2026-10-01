@@ -68,11 +68,11 @@ export default async function ReportsPage({
           />
         </div>
         {r.bestSellers.length === 0 ? (
-          <p className="mt-3 rounded-2xl bg-white p-4 text-center text-sm text-muted shadow-sm">
+          <p className="mt-3 rounded-2xl bg-paper p-4 text-center text-sm text-muted shadow-soft">
             No paid orders in this period yet.
           </p>
         ) : (
-          <ol className="mt-3 divide-y divide-cream-dark rounded-2xl bg-white shadow-sm">
+          <ol className="mt-3 divide-y divide-line rounded-2xl bg-paper shadow-soft">
             {r.bestSellers.map((b, i) => (
               <li
                 key={`${b.menuItemId}-${b.isBulk}`}
@@ -125,7 +125,7 @@ function Card({
   note?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm">
+    <div className="rounded-2xl bg-paper p-4 shadow-soft">
       <p className="text-sm text-muted">{label}</p>
       <p className="mt-1 text-lg font-bold whitespace-nowrap text-brand tabular-nums">
         {value}
@@ -151,7 +151,7 @@ function Segmented({
           scroll={false}
           aria-current={o.active ? "true" : undefined}
           className={`flex min-h-11 items-center rounded-full px-4 text-sm font-semibold ${
-            o.active ? "bg-brand text-white" : "bg-white text-brand shadow-sm"
+            o.active ? "bg-brand text-white" : "bg-paper text-brand shadow-soft"
           }`}
         >
           {o.label}

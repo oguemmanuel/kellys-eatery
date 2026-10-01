@@ -14,7 +14,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
   return (
     <form
       action={action}
-      className="mt-6 grid gap-3 rounded-2xl bg-white p-5 shadow-sm"
+      className="mt-6 grid gap-3 rounded-2xl bg-paper p-5 shadow-soft"
     >
       <label className="grid gap-1">
         <span className="text-sm font-medium">Email</span>
@@ -24,7 +24,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           autoComplete="email"
           defaultValue={state.email}
           required
-          className="min-h-12 w-full rounded-xl border border-brand/20 bg-cream/40 px-3 text-base"
+          className="min-h-12 w-full rounded-xl border border-line bg-white px-3 text-base"
         />
       </label>
       <label className="grid gap-1">
@@ -34,7 +34,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           type="password"
           autoComplete="current-password"
           required
-          className="min-h-12 w-full rounded-xl border border-brand/20 bg-cream/40 px-3 text-base"
+          className="min-h-12 w-full rounded-xl border border-line bg-white px-3 text-base"
         />
       </label>
       {state.error && (
@@ -45,7 +45,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 min-h-12 rounded-xl bg-brand font-semibold text-white disabled:bg-muted/40"
+        className="press mt-1 min-h-12 rounded-xl bg-brand font-semibold text-white active:bg-brand-dark disabled:bg-muted/40"
       >
         {pending ? "Signing in..." : "Sign in"}
       </button>

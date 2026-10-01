@@ -65,7 +65,7 @@ export function LiveRefresh({ latestNumber }: { latestNumber: number }) {
         className={`min-h-11 rounded-full px-4 text-sm font-semibold ${
           soundOn
             ? "bg-brand-light text-brand"
-            : "bg-white text-muted shadow-sm"
+            : "bg-paper text-muted shadow-soft"
         }`}
       >
         {soundOn ? "Sound on" : "Turn on sound"}

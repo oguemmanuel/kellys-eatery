@@ -28,14 +28,14 @@ export function MenuManager({ dishes }: { dishes: AdminDish[] }) {
         placeholder="Search dishes"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="min-h-12 w-full rounded-xl border border-brand/20 bg-white px-4 text-base"
+        className="min-h-12 w-full rounded-xl border border-line bg-white px-4 text-base"
       />
       {[...groups].map(([category, items]) => (
         <section key={category} className="mt-5">
           <h2 className="font-display text-lg font-bold text-brand">
             {category}
           </h2>
-          <ul className="mt-2 divide-y divide-cream-dark rounded-2xl bg-white shadow-sm">
+          <ul className="mt-2 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
             {items.map((dish) => (
               <li key={dish.id}>
                 <DishRow dish={dish} />
@@ -57,14 +57,19 @@ function DishRow({ dish }: { dish: AdminDish }) {
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="flex items-center gap-3 p-3">
-      <DishImage
-        src={dish.imageUrl}
-        alt=""
-        sizes="48px"
-        className="size-12 shrink-0 rounded-lg"
-      />
-      <Link href={`/admin/menu/${dish.id}`} className="min-w-0 flex-1">
+    <div className="flex items-center gap-3 px-4 py-3">
+      {dish.imageUrl && (
+        <DishImage
+          src={dish.imageUrl}
+          alt=""
+          sizes="48px"
+          className="size-12 shrink-0 rounded-lg"
+        />
+      )}
+      <Link
+        href={`/admin/menu/${dish.id}`}
+        className={`min-w-0 flex-1 rounded-lg ${available ? "" : "opacity-60"}`}
+      >
         <span className="block font-semibold text-ink">{dish.name}</span>
         <span className="block text-sm text-muted">
           {dish.price === null ? "No price yet" : formatGHS(dish.price)}

@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useBulkCart, type CartSelection } from "@/components/cart";
 import { DishImage } from "@/components/dish-image";
-import { BackIcon, PlusIcon } from "@/components/icons";
+import { FloatingBar } from "@/components/cart-bar";
+import { CheckIcon, PlusIcon } from "@/components/icons";
+import { PageHeader } from "@/components/page-header";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { formatGHS } from "@/lib/format";
 import type { BulkItem } from "@/lib/menu";
@@ -14,30 +15,19 @@ export function BulkView({ items }: { items: BulkItem[] }) {
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-4 pb-28">
-      <header className="flex items-center gap-3">
-        <Link
-          href="/"
-          aria-label="Back to Kelly's Eatery"
-          className="grid size-11 place-items-center rounded-full bg-white text-brand shadow-sm"
-        >
-          <BackIcon className="size-5" />
-        </Link>
-        <div>
-          <h1 className="font-display text-2xl font-bold text-brand">
-            Bulk orders
-          </h1>
-          <p className="text-sm text-muted">
-            Order by the bowl for events, family and offices.
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        backHref="/"
+        backLabel="Back to Kelly's Eatery"
+        title="Bulk orders"
+        subtitle="By the bowl, for events, family and offices."
+      />
 
       {items.length === 0 ? (
-        <p className="mt-10 rounded-2xl bg-white p-5 text-center text-muted shadow-sm">
+        <p className="mt-10 rounded-2xl bg-paper p-5 text-center text-muted shadow-soft">
           No bulk dishes are listed right now. Please check back soon.
         </p>
       ) : (
-        <ul className="mt-5 grid gap-3">
+        <ul className="mt-5 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-soft">
           {items.map((item) => (
             <li key={item.id}>
               <BulkCard item={item} />
@@ -47,17 +37,12 @@ export function BulkView({ items }: { items: BulkItem[] }) {
       )}
 
       {ready && itemCount > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Link
-            href="/bulk/checkout"
-            className="mx-auto flex min-h-14 max-w-xl items-center justify-between gap-3 rounded-2xl bg-brand px-5 text-white shadow-lg active:bg-brand-dark"
-          >
-            <span className="font-semibold tabular-nums">
-              {formatGHS(subtotal)}
-            </span>
-            <span className="font-semibold">Continue</span>
-          </Link>
-        </div>
+        <FloatingBar
+          href="/bulk/checkout"
+          count={itemCount}
+          label="Continue"
+          total={subtotal}
+        />
       )}
     </main>
   );
@@ -111,16 +96,8 @@ function BulkCard({ item }: { item: BulkItem }) {
     });
 
   return (
-    <div
-      className={`rounded-2xl bg-white p-3 shadow-sm ${soldOut ? "opacity-60 grayscale" : ""}`}
-    >
+    <div className={`p-4 ${soldOut ? "opacity-55" : ""}`}>
       <div className="flex items-center gap-3">
-        <DishImage
-          src={item.imageUrl}
-          alt={item.name}
-          sizes="80px"
-          className="size-20 shrink-0 rounded-xl"
-        />
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-ink">{item.name}</p>
           {item.description && (
@@ -128,7 +105,7 @@ function BulkCard({ item }: { item: BulkItem }) {
               {item.description}
             </p>
           )}
-          <p className="mt-1 text-sm font-semibold text-brand">
+          <p className="mt-1 text-sm font-semibold text-brand tabular-nums">
             {soldOut ? (
               <span className="text-muted">Sold out</span>
             ) : (
@@ -136,6 +113,14 @@ function BulkCard({ item }: { item: BulkItem }) {
             )}
           </p>
         </div>
+        {item.imageUrl && (
+          <DishImage
+            src={item.imageUrl}
+            alt=""
+            sizes="80px"
+            className={`size-20 shrink-0 rounded-xl ${soldOut ? "grayscale" : ""}`}
+          />
+        )}
       </div>
 
       {!soldOut && (
@@ -157,14 +142,15 @@ function BulkCard({ item }: { item: BulkItem }) {
                     aria-checked={active}
                     disabled={!o.isAvailable}
                     onClick={() => setPicked((p) => ({ ...p, [g.id]: o.id }))}
-                    className={`min-h-11 rounded-full border px-4 text-sm font-medium ${
+                    className={`press flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium ${
                       !o.isAvailable
                         ? "border-transparent bg-cream-dark text-muted/60 line-through"
                         : active
-                          ? "border-brand bg-brand text-white"
-                          : "border-brand/20 bg-white text-ink"
+                          ? "border-brand bg-brand text-white shadow-soft"
+                          : "border-line bg-white text-ink"
                     }`}
                   >
+                    {active && <CheckIcon className="size-4 animate-fade" />}
                     {o.name}
                   </button>
                 );
@@ -194,7 +180,7 @@ function BulkCard({ item }: { item: BulkItem }) {
               <button
                 type="button"
                 onClick={addOne}
-                className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-brand px-4 text-sm font-semibold text-white"
+                className="press flex h-11 shrink-0 items-center gap-1 rounded-full bg-brand px-4 text-sm font-semibold text-white active:bg-brand-dark"
               >
                 <PlusIcon className="size-4" />
                 Add

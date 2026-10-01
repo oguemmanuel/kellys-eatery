@@ -30,7 +30,7 @@ export function BulkManager({ dishes }: { dishes: AdminDish[] }) {
         placeholder="Search dishes"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="min-h-12 w-full rounded-xl border border-brand/20 bg-white px-4 text-base"
+        className="min-h-12 w-full rounded-xl border border-line bg-white px-4 text-base"
       />
       <div className="mt-3 flex gap-2" role="group" aria-label="Filter">
         {FILTERS.map((f) => (
@@ -42,7 +42,7 @@ export function BulkManager({ dishes }: { dishes: AdminDish[] }) {
             className={`min-h-11 rounded-full px-4 text-sm font-semibold ${
               filter === f.key
                 ? "bg-brand text-white"
-                : "bg-white text-brand shadow-sm"
+                : "bg-paper text-brand shadow-soft"
             }`}
           >
             {f.label}
@@ -89,7 +89,7 @@ function BulkRow({ dish }: { dish: AdminDish }) {
 
   return (
     <div
-      className={`rounded-2xl bg-white p-3 shadow-sm ${pending ? "opacity-70" : ""}`}
+      className={`rounded-2xl bg-paper p-3 shadow-soft ${pending ? "opacity-70" : ""}`}
     >
       <div className="flex items-center gap-3">
         <DishImage
@@ -133,7 +133,7 @@ function BulkRow({ dish }: { dish: AdminDish }) {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="Not set"
-            className="min-h-11 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3"
+            className="min-h-11 w-full min-w-0 rounded-xl border border-line bg-white px-3"
           />
         </label>
         <label className="grid w-28 gap-1">
@@ -142,13 +142,13 @@ function BulkRow({ dish }: { dish: AdminDish }) {
             list="bulk-unit-options"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            className="min-h-11 w-full min-w-0 rounded-xl border border-brand/20 bg-cream/40 px-3"
+            className="min-h-11 w-full min-w-0 rounded-xl border border-line bg-white px-3"
           />
         </label>
         <button
           type="submit"
           disabled={!dirty || pending}
-          className="min-h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white disabled:bg-muted/30"
+          className="press min-h-11 rounded-xl bg-brand px-4 text-sm font-semibold text-white active:bg-brand-dark disabled:bg-muted/30"
         >
           Save
         </button>

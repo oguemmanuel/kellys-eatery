@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { WhatsAppIcon } from "@/components/icons";
+import { CheckIcon, CloseIcon, WhatsAppIcon } from "@/components/icons";
 import { displayPhone, formatGHS, whatsappLink } from "@/lib/format";
 import type { OrderView as Order } from "@/lib/orders";
 
@@ -48,9 +48,29 @@ export function OrderView({
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-10">
-      <header className="text-center">
-        <p className="text-sm font-medium text-muted">Order #{order.number}</p>
-        <h1 className="mt-1 font-display text-3xl font-bold text-brand">
+      <header className="animate-rise text-center">
+        <span
+          aria-hidden
+          className={`mx-auto grid size-16 place-items-center rounded-full ${
+            awaiting
+              ? "bg-accent/25 text-accent-text"
+              : cancelled
+                ? "bg-cream-dark text-muted"
+                : "bg-brand text-white"
+          }`}
+        >
+          {awaiting ? (
+            <WhatsAppIcon className="size-8" />
+          ) : cancelled ? (
+            <CloseIcon className="size-7" />
+          ) : (
+            <CheckIcon className="size-8" />
+          )}
+        </span>
+        <p className="mt-3 text-sm font-medium text-muted">
+          Order #{order.number}
+        </p>
+        <h1 className="mt-1 font-display text-3xl leading-tight font-bold text-brand">
           {headline}
         </h1>
         {order.isBulk && (
@@ -61,39 +81,50 @@ export function OrderView({
       </header>
 
       {awaiting && (
-        <section className="mt-5 rounded-3xl bg-white p-5 text-center shadow-sm">
+        <section
+          className="stagger mt-6 animate-rise rounded-3xl bg-paper p-5 text-center shadow-soft"
+          style={{ "--i": 1 } as React.CSSProperties}
+        >
+          <p className="text-sm text-muted">
+            Send us your order on WhatsApp and pay there. We confirm it here.
+          </p>
           <a
             href={whatsappLink(whatsapp, buildMessage(order, orderUrl))}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#1f7a3a] px-5 text-lg font-semibold text-white active:bg-brand-dark"
+            className="press mt-4 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#1f7a3a] px-4 font-semibold text-white shadow-lift active:bg-brand-dark"
           >
             <WhatsAppIcon className="size-6" />
-            Send order on WhatsApp to pay
+            Send order on WhatsApp
           </a>
           <Countdown expiresAt={order.expiresAt} onExpire={router.refresh} />
         </section>
       )}
 
       {cancelled ? (
-        <section className="mt-5 rounded-3xl bg-white p-5 text-center shadow-sm">
+        <section className="mt-6 rounded-3xl bg-paper p-5 text-center shadow-soft">
           <p className="text-muted">
             This order was cancelled because payment was not received in time.
           </p>
           <Link
             href={order.isBulk ? "/bulk" : "/menu"}
-            className="mt-4 inline-flex min-h-12 items-center rounded-2xl bg-brand px-6 font-semibold text-white"
+            className="press mt-4 inline-flex min-h-12 items-center rounded-2xl bg-brand px-6 font-semibold text-white active:bg-brand-dark"
           >
             Order again
           </Link>
         </section>
       ) : (
-        <ol className="mt-5 rounded-3xl bg-white p-5 shadow-sm">
+        <ol className="mt-4 grid grid-cols-2 gap-2">
           {STEPS.map((step, i) => {
             const done = i < stepIndex;
             const current = i === stepIndex;
             return (
-              <li key={step.key} className="flex items-center gap-3 py-1.5">
+              <li
+                key={step.key}
+                className={`flex items-center gap-2.5 rounded-2xl px-3 py-3 transition-colors duration-(--duration-slow) ${
+                  current ? "bg-paper shadow-soft" : done ? "bg-brand-light" : "bg-paper/60"
+                }`}
+              >
                 <span
                   className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
                     done
@@ -104,16 +135,16 @@ export function OrderView({
                   }`}
                   aria-hidden
                 >
-                  {done ? "✓" : i + 1}
+                  {done ? <CheckIcon className="size-3.5" /> : i + 1}
                 </span>
                 <span
-                  className={
+                  className={`text-sm leading-tight ${
                     current
                       ? "font-semibold text-ink"
                       : done
-                        ? "text-ink"
+                        ? "font-medium text-brand"
                         : "text-muted"
-                  }
+                  }`}
                 >
                   {step.label}
                   {current && <span className="sr-only"> (current)</span>}
@@ -124,9 +155,9 @@ export function OrderView({
         </ol>
       )}
 
-      <section className="mt-4 rounded-3xl bg-white p-5 shadow-sm">
-        <h2 className="font-semibold text-ink">Your order</h2>
-        <ul className="mt-2 divide-y divide-cream-dark">
+      <section className="mt-4 rounded-3xl bg-paper p-5 shadow-soft">
+        <h2 className="font-display text-lg font-bold text-brand">Your order</h2>
+        <ul className="mt-1 divide-y divide-line">
           {order.items.map((item) => (
             <li
               key={item.id}
@@ -147,16 +178,16 @@ export function OrderView({
             </li>
           ))}
         </ul>
-        <div className="mt-2 flex justify-between border-t border-cream-dark pt-3">
+        <div className="mt-1 flex items-baseline justify-between border-t border-line pt-3">
           <span className="font-semibold">Total</span>
-          <span className="text-lg font-bold text-brand tabular-nums">
+          <span className="font-display text-xl font-bold text-brand tabular-nums">
             {formatGHS(order.total)}
           </span>
         </div>
       </section>
 
-      <section className="mt-4 rounded-3xl bg-white p-5 text-sm shadow-sm">
-        <h2 className="font-semibold text-ink">Delivery</h2>
+      <section className="mt-4 rounded-3xl bg-paper p-5 text-sm shadow-soft">
+        <h2 className="font-display text-lg font-bold text-brand">Delivery</h2>
         <dl className="mt-2 grid gap-2">
           {order.scheduledLabel && (
             <Row label="When" value={order.scheduledLabel} />
@@ -171,7 +202,10 @@ export function OrderView({
       </section>
 
       <p className="mt-6 text-center">
-        <Link href="/" className="font-semibold text-brand underline">
+        <Link
+          href="/"
+          className="inline-flex min-h-11 items-center font-semibold text-brand underline underline-offset-4"
+        >
           Back to Kelly&apos;s Eatery
         </Link>
       </p>

@@ -12,7 +12,7 @@ export function BarChart({ title, bars }: { title: string; bars: Bar[] }) {
   );
 
   return (
-    <figure className="rounded-2xl bg-white p-4 shadow-sm">
+    <figure className="rounded-2xl bg-paper p-4 shadow-soft">
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-3">
         <span className="font-semibold text-ink">{title}</span>
         <span className="text-sm text-muted tabular-nums">
@@ -27,7 +27,7 @@ export function BarChart({ title, bars }: { title: string; bars: Bar[] }) {
             title={`${b.label}: ${formatGHS(b.value)}`}
           >
             <div
-              className={`w-full rounded-t-sm ${b.value > 0 ? "bg-brand" : "bg-cream-dark"}`}
+              className={`w-full origin-bottom animate-grow rounded-t-sm ${b.value > 0 ? "bg-brand" : "bg-cream-dark"}`}
               style={{
                 height:
                   max > 0 && b.value > 0

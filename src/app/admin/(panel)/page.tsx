@@ -25,10 +25,10 @@ export default async function OrdersPage({
               <Link
                 href={t.key === "awaiting" ? "/admin" : `/admin?tab=${t.key}`}
                 aria-current={tab === t.key ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold ${
+                className={`press flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold ${
                   tab === t.key
                     ? "bg-brand text-white"
-                    : "bg-white text-brand shadow-sm"
+                    : "bg-paper text-brand shadow-soft"
                 }`}
               >
                 {t.label}
@@ -50,13 +50,17 @@ export default async function OrdersPage({
       </nav>
 
       {orders.length === 0 ? (
-        <p className="mt-10 text-center text-muted">
+        <p className="mt-10 animate-fade text-center text-muted">
           No orders here right now.
         </p>
       ) : (
         <ul className="mt-4 grid gap-3">
-          {orders.map((order) => (
-            <li key={order.id}>
+          {orders.map((order, i) => (
+            <li
+              key={order.id}
+              className="stagger animate-rise"
+              style={{ "--i": Math.min(i, 6) } as React.CSSProperties}
+            >
               <OrderCard order={order} />
             </li>
           ))}

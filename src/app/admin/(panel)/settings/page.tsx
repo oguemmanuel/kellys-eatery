@@ -20,7 +20,7 @@ export default async function SettingsPage() {
         Settings
       </h1>
 
-      <section className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="grid gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="font-semibold text-ink">Open for orders</h2>
@@ -32,7 +32,7 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="mt-4 rounded-2xl bg-paper p-4 shadow-soft">
         <h2 className="font-semibold text-ink">QR code</h2>
         <p className="text-sm text-muted">
           Opens the intro page at {siteUrl.replace(/^https?:\/\//, "")}.
@@ -45,7 +45,7 @@ export default async function SettingsPage() {
         )}
         <div className="mt-3 flex items-center gap-4">
           <div
-            className="size-32 shrink-0 rounded-xl border border-cream-dark [&>svg]:size-full"
+            className="size-32 shrink-0 rounded-xl border border-line [&>svg]:size-full"
             role="img"
             aria-label="QR code preview"
             dangerouslySetInnerHTML={{ __html: svg }}
@@ -53,7 +53,7 @@ export default async function SettingsPage() {
           <div className="grid flex-1 gap-2">
             <Link
               href="/admin/poster"
-              className="flex min-h-11 items-center justify-center rounded-full bg-brand px-4 text-sm font-semibold text-white"
+              className="press flex min-h-11 items-center justify-center rounded-full bg-brand px-4 text-sm font-semibold text-white active:bg-brand-dark"
             >
               Print poster
             </Link>
@@ -77,7 +77,7 @@ export default async function SettingsPage() {
 
       <SettingsForm kitchen={kitchen} />
 
-      <section className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm">
+      <section className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-paper p-4 shadow-soft">
         <p className="min-w-0 text-sm text-muted">
           Signed in as <span className="break-all text-ink">{admin.email}</span>
         </p>
