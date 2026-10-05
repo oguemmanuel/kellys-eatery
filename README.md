@@ -55,7 +55,7 @@ MVP week 4 (owner only):
 - `/admin/settings` open switch, opening hours, WhatsApp and call numbers, bulk notice hours, the intro page story, and sign out
 - QR code for the intro page as a PNG (2048px) or SVG download, plus `/admin/poster`, an A4 poster to print or save as PDF
 
-Before printing the QR code, set `NEXT_PUBLIC_SITE_URL` to the live domain. The settings screen warns while it still points at a local or preview address.
+Before printing the QR code, set `NEXT_PUBLIC_SITE_URL` to the live domain. The settings screen warns while it is not set or points at a local address.
 
 ## Launch checklist
 

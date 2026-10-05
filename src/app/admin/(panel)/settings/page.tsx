@@ -11,8 +11,10 @@ export default async function SettingsPage() {
   const admin = await requireAdmin("OWNER");
   const [kitchen, siteUrl] = await Promise.all([getKitchen(), getSiteUrl()]);
   const svg = await qrSvg(`${siteUrl}/`);
-  // A QR code for a local or preview address is no use on a flyer.
-  const isLocal = /localhost|127\.0\.0\.1|\.vercel\.app/.test(siteUrl);
+  // Without NEXT_PUBLIC_SITE_URL the address comes from the request, which
+  // may be a local or preview address that is no use on a flyer.
+  const isLocal =
+    !process.env.NEXT_PUBLIC_SITE_URL || /localhost|127\.0\.0\.1/.test(siteUrl);
 
   return (
     <>
